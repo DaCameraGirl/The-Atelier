@@ -367,7 +367,8 @@
     mode: 'story',
     personality: 'mentor',
     conversation: [],
-    turnCount: 0
+    turnCount: 0,
+    sending: false
   };
 
   const STORAGE_KEY = 'atelier_conversation';
@@ -377,10 +378,14 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        state.conversation = parsed.conversation || [];
-        state.turnCount = parsed.turnCount || 0;
+        if (parsed && Array.isArray(parsed.conversation)) {
+          state.conversation = parsed.conversation.filter(m => m && m.text && m.role);
+        }
+        state.turnCount = typeof parsed.turnCount === 'number' ? parsed.turnCount : 0;
       }
-    } catch (e) {}
+    } catch (e) {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+    }
   }
 
   function saveState() {
@@ -575,7 +580,8 @@
     const latest = lastFew(1);
     const usesCallback = hasHistory() && state.turnCount > 1 && Math.random() < 0.35;
 
-    let core = genMap[mode] ? genMap[mode](text) : pick(Object.values(genMap)).apply(this, [text]);
+    const genFn = genMap[mode];
+    let core = genFn ? genFn(text) : generateStory(text);
     let body;
 
     if (usesCallback) {
@@ -628,17 +634,23 @@
   }
 
   function restoreConversation() {
-    if (state.conversation.length === 0) return;
+    if (!state.conversation || state.conversation.length === 0) return;
     if (emptyState && emptyState.parentNode) emptyState.remove();
-    state.conversation.forEach(msg => {
+    const valid = state.conversation.filter(m => m && m.text && m.role);
+    valid.forEach(msg => {
       addMessage(msg.text, msg.role);
     });
+    if (valid.length !== state.conversation.length) {
+      state.conversation = valid;
+      saveState();
+    }
     chat.scrollTop = chat.scrollHeight;
   }
 
   function handleSend() {
     const msg = input.value.trim();
-    if (!msg) return;
+    if (!msg || state.sending) return;
+    state.sending = true;
     input.value = '';
     sendBtn.disabled = true;
 
@@ -649,13 +661,20 @@
 
     const delay = 600 + Math.random() * 900;
     setTimeout(() => {
-      removeTyping();
-      const response = generateResponse(msg, state.mode, state.personality);
-      state.conversation.push({ role: 'partner', text: response, mode: state.mode, personality: state.personality });
-      addMessage(response, 'partner');
-      saveState();
-      sendBtn.disabled = false;
-      input.focus();
+      try {
+        removeTyping();
+        const response = generateResponse(msg, state.mode, state.personality);
+        state.conversation.push({ role: 'partner', text: response, mode: state.mode, personality: state.personality });
+        addMessage(response, 'partner');
+        saveState();
+      } catch (err) {
+        addMessage('Sorry, something hiccuped — try again?', 'partner');
+        showToast('Error: ' + err.message);
+      } finally {
+        state.sending = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
     }, delay);
   }
 
@@ -735,7 +754,7 @@
 
   sendBtn.addEventListener('click', handleSend);
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !state.sending) {
       e.preventDefault();
       handleSend();
     }
