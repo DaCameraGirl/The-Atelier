@@ -1,10 +1,4 @@
-│                                                                                                                                                                                                               │
-│  <div align="center">                                                                                                                                                                                         │
-│    <img                                                                                                                                                                                                       │
-│  src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=32&duration=2000&pause=500&color=6C5CE7&center=true&vCenter=true&width=600&lines=%F0%9F%8C%80+The+Atelier;Your+Creative+AI+Partner;Built+w  │
-│  ith+%E2%9D%A4%EF%B8%8F+%26+no+backend;Open+source.+Zero+setup.+Infinite+ideas." alt="Typing SVG" />                                                                                                          │
-│  </div>                                                                                                                                                                                                       │
-│                                                                                                                                                                                                               │
+                                                                                                                                                                                                             
 │  <p align="center">                                                                                                                                                                                           │
 │    <img src="https://img.shields.io/badge/status-live-brightgreen?style=for-the-badge" />                                                                                                                     │
 │    <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge" />                                                                                                                            │
