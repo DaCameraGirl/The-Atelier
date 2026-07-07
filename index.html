@@ -593,6 +593,8 @@
     if (/^(any (ideas|suggestions|tips)|what (should|do) i|give me|help me|need (ideas|help|inspiration)|i('m| am) stuck|im stuck|what next|what now)$/.test(t)) return 'needideas';
     if (/^(no|nah|nope|not really|meh|na|i guess not)$/i.test(t)) return 'dismiss';
     if (/^(yes|yeah|yea|yep|yup|ya|ye|definitely|absolutely|for sure|hell yeah|hell yea)$/i.test(t)) return 'affirm';
+    if (/(^|\s)(hi|hey|hello|sup|yo)\b/.test(t) && /(who|what are you|what is this|r u|are you)/.test(t)) return 'whoami';
+    if (/what can (you|u)( do)?/.test(t) || /what do you do/.test(t) || /what are you (for|made for)/.test(t)) return 'canyou';
     return null;
   }
 
@@ -768,29 +770,60 @@
     return pick(wrappers[pers] || wrappers.mentor)(content);
   }
 
+  function isCreativePrompt(text) {
+    const t = text.trim();
+    if (t.length < 25) return false;
+    if (/[?]/.test(t)) return false;
+    if (/^(can|could|will|would|do|does|is|are|what|why|how|when|where|who)\b/i.test(t)) return false;
+    if (/^(hey|hi|hello|yo|sup|ok|okay|so|well|like|basically)\b/i.test(t.toLowerCase())) return false;
+    const shortWords = t.split(' ').filter(w => w.length > 2).length;
+    if (shortWords < 3) return false;
+    return true;
+  }
+
+  function casualResponse(text, pers) {
+    const t = text.toLowerCase().trim();
+    if (/\b(what|how|why|when|where|who)\b/.test(t) || /\?/.test(t)) {
+      return pick([
+        "Honestly? I'm just a creative partner — I help you build stories, characters, worlds, that kind of thing. Pick a mode up top and throw something at me.",
+        "I'm here to help you create. Got a story idea? A character you're thinking about? A world you want to build? Tell me about it.",
+        "You can ask me to brainstorm, critique your work, help build a character or world — whatever you're creating. What are you working on?",
+        "Think of me as a thinking partner for creative projects. I can help riff on ideas, give feedback, or just explore concepts with you. What's on your mind?",
+        "I don't do much on my own — I need YOU to bring the spark. Tell me what you're creating and we'll make it better together."
+      ]);
+    }
+    if (/\b(that's cool|thats cool|nice|dope|sick|fire|lit|bet|word)\b/.test(t)) {
+      return pick(["Appreciate it. Now let's make something.", "Thanks. You bring the idea, I'll bring the energy.", "Cool. Let's do something with that energy."]);
+    }
+    if (/\b(ok|okay|aight|ight|bet|sayless|fa sure|fo sho)\b/.test(t) && t.length < 10) {
+      return pick(["Good. Whenever you're ready.", "Alright. I'm here.", "Bet. Let me know when you've got something."]);
+    }
+    return pick([
+      "I'm listening. What are you thinking about creating?",
+      "I'm all ears. Got a concept you want to explore?",
+      "Tell me what you're working on — a story, a character, a world, anything.",
+      "I'm here for creative stuff. What do you want to build today?",
+      "Hit me with an idea. Doesn't have to be polished — just real.",
+      "What's on your mind creatively? I work best when you give me something to push back on.",
+      "I'm ready when you are. What are we making?",
+      "I can work with anything — a sentence, a feeling, a random thought. What've you got?"
+    ]);
+  }
+
   function generateResponse(text, mode, pers) {
     state.turnCount++;
 
     const chatType = detectChat(text);
-    if (chatType) {
-      return chatResponse(chatType, pers);
+    if (chatType) return chatResponse(chatType, pers);
+
+    if (isCreativePrompt(text)) {
+      const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
+      const genFn = genMap[mode];
+      let core = genFn ? genFn(text) : generateStory(text);
+      return generateWithPersonality(core, pers);
     }
 
-    if (text.length < 20) {
-      return pick([
-        "Tell me more — give me something to work with.",
-        "I need a bit more than that. What are you thinking about?",
-        "Give me a concept, a character, a world — anything you want to explore.",
-        "Short and sweet. Give me the long version."
-      ]);
-    }
-
-    const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
-    const genFn = genMap[mode];
-
-    let core = genFn ? genFn(text) : generateStory(text);
-    const body = generateWithPersonality(core, pers);
-    return body;
+    return casualResponse(text, pers);
   }
         provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
         cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
