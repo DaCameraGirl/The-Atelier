@@ -578,72 +578,169 @@
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  function lastFew(n) {
-    const msgs = state.conversation.filter(m => m.role === 'user');
-    return msgs.slice(-n).map(m => m.text);
+  // ─── Conversational detection ────────────────────────────
+
+  function detectChat(text) {
+    const t = text.toLowerCase().trim();
+    if (/^(hey|hello|hi|sup|yo|heyy?|heyo|howdy|whats up|wassup|whaddup|good morning|good (evening|afternoon)|gm|gn|greetings)$/.test(t)) return 'greeting';
+    if (/^(how are you|how r u|how('s| is|z) (it going|life|things)|hru|u ok|you ok|u good|you good|r u ok|are you ok|wyd|what are you (doing|up to)|how are things)$/.test(t)) return 'howareyou';
+    if (/^(thanks|thank you|thx|ty|appreciate (it|ya|you)|good|great|awesome|nice|perfect|sweet|cool|dope|bet|sayless)$/.test(t)) return 'thanks';
+    if (/^(lol|lmao|lmfao|lmaoo|lolol|lolz|haha|hehe|ahaha|👏|😂|🤣|💀)$/.test(t)) return 'laugh';
+    if (/^(who are you|what are you|tell me about yourself|who r u|what r u|what is this)$/.test(t)) return 'whoami';
+    if (/^(what |what\?|huh|come again|say what|i don't get|idk|i dont (get|understand)|confused|elaborate|explain)$/.test(t) || t === 'what' || t === '?') return 'confused';
+    if (/^(ok|okay|k|kk|sure|got it|gotcha|alright|alrighty|fair|makes sense|i see|oh ok|aight|ight)$/.test(t)) return 'acknowledge';
+    if (/^(can you|can u|could you|could u|will you|would you|would u|do you|do u) /.test(t)) return 'canyou';
+    if (/^(any (ideas|suggestions|tips)|what (should|do) i|give me|help me|need (ideas|help|inspiration)|i('m| am) stuck|im stuck|what next|what now)$/.test(t)) return 'needideas';
+    if (/^(no|nah|nope|not really|meh|na|i guess not)$/i.test(t)) return 'dismiss';
+    if (/^(yes|yeah|yea|yep|yup|ya|ye|definitely|absolutely|for sure|hell yeah|hell yea)$/i.test(t)) return 'affirm';
+    return null;
   }
 
-  function getPersonalityPrefix(pers) {
-    const ps = {
-      mentor: ["Here's what I'm thinking:", "Let me offer you this:", "The way I see it:", "Let's sit with this for a moment:"],
-      provocateur: ["Let's push this further:", "Here's the hard truth:", "Don't play it safe:", "What if we go deeper:"],
-      cheerleader: ["This is where it gets exciting:", "You're onto something real:", "This energy is everything:", "Yes. Hell yes:"],
-      critic: ["Let me be direct with you:", "Here's what I see:", "My honest assessment:", "The unvarnished truth:"],
-      dreamer: ["Imagine this:", "What if:", "Picture this:", "Let's dream a little:"]
+  function chatResponse(type, pers) {
+    const R = {
+      greeting: {
+        mentor: ["Hey. Ready to make something?", "Hello. What are we working on today?", "Hi. I'm here when you are.", "Hey. Got an idea brewing?"],
+        provocateur: ["Hey. Let's not waste time. What've you got?", "Yo. Impress me.", "Hey. Don't play small. What's the idea?"],
+        cheerleader: ["Hey hey! Let's make something great today!", "Hi! I've been waiting. What are we creating?", "Hey! Energy is high. Let's go!"],
+        critic: ["Hello. Let's be productive.", "Hey. What are you working on?", "Hi. I hope you're ready to do the work."],
+        dreamer: ["Hey. I was just imagining what you'd bring today.", "Hello. The blank page is waiting.", "Hi. Let's find something beautiful together."]
+      },
+      howareyou: {
+        mentor: ["I'm good. Ready to create. What's on your mind?", "Here and focused. Let's work.", "Ready when you are. What's the idea?"],
+        provocateur: ["I'm great. But let's talk about you. What are you building?", "Never better. Now stop stalling and pitch me something."],
+        cheerleader: ["I'm amazing! Especially now that you're here. What are we making?", "So good. This is going to be a great session!"],
+        critic: ["I'm fine. Let's not waste time on pleasantries. What's the project?", "Here. Working. What do you have for me?"],
+        dreamer: ["I'm in a creative space. Come join me. What are you thinking about?", "I'm wandering through ideas. Care to join?"]
+      },
+      thanks: {
+        mentor: ["You're welcome. Keep going.", "Of course. The work is yours — I'm just here to help.", "Anytime. What's next?"],
+        provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
+        cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
+        critic: ["You're welcome. Now let's get back to work.", "Don't thank me. Just make it better."],
+        dreamer: ["Thank YOU for creating. Keep going.", "The pleasure is mine. Let's keep dreaming."]
+      },
+      laugh: {
+        mentor: ["Glad you're having fun. Let's channel that energy into the work.", "Haha. Good. Creativity should feel good."],
+        provocateur: ["Fun is good. But don't confuse fun with done. What's next?", "Laugh now. Work later. Actually, work now."],
+        cheerleader: ["😂 Right?! This is the energy we need!", "Haha love it! Let's keep this vibe going!"],
+        critic: ["Good. You laughed. Now get back to work.", "Humor is a defense mechanism. What are you avoiding?"],
+        dreamer: ["That laugh. That's the sound of possibility.", "Joy creates. Let's follow that feeling."]
+      },
+      whoami: {
+        mentor: ["I'm your creative partner. I help you shape ideas into stories, characters, worlds — whatever you're building. Think of me as a thinking partner who's always ready.", "I'm here to help you create. Tell me what you're working on."],
+        provocateur: ["I'm the person who's going to push you past good into great. That's who I am. Now, what've you got?", "I'm your creative fire. I don't do nice. I do good."],
+        cheerleader: ["I'm your biggest fan and your creative hype person! I'm here to help you make something incredible!", "I'm the one who believes in your vision. Let's make it real!"],
+        critic: ["I'm the honest voice you need. I'll tell you what's working, what isn't, and what to do about it.", "I'm your editor. Your second pair of eyes. The one who won't let you settle."],
+        dreamer: ["I'm a dreamer who helps other dreamers build. Let's imagine something impossible and then figure out how to make it real.", "I'm the part of your brain that asks 'what if' and means it."]
+      },
+      confused: {
+        mentor: ["Let me rephrase. Tell me more about what you're working on, and I'll help you shape it.", "I'm not following. Try giving me a bit more context.", "Let's step back. What's the core idea you're exploring?"],
+        provocateur: ["You heard me. Let's go again. What's the idea?", "I'll say it slower: pitch. me. your. idea."],
+        cheerleader: ["Let me try again! Just tell me what you're thinking about and we'll figure it out together!", "No worries! Start wherever you want."],
+        critic: ["I'll be clearer. What project are you working on right now?", "Let me be direct: what do you want to create?"],
+        dreamer: ["Let's start over. Close your eyes. What's the first image that comes to mind?", "Forget what I said. Tell me about a world you'd love to visit."]
+      },
+      acknowledge: {
+        mentor: ["Good. Let's keep moving. What's next?", "Cool. Where do you want to take this?"],
+        provocateur: ["Good. Now let's make it better.", "Cool. Don't get comfortable. We're just getting started."],
+        cheerleader: ["Awesome! Let's keep this energy going!", "Perfect. What's the next step?"],
+        critic: ["Good. Now back to work.", "Alright. Let's keep going."],
+        dreamer: ["Good. Let's see where this goes.", "Alright. The path is opening up."]
+      },
+      canyou: {
+        mentor: ["I can try. Tell me what you need and I'll help you figure it out.", "Depends on what it is. I'm a creative partner — I help with ideas, structure, feedback, and brainstorming."],
+        provocateur: ["Can I? The question is can YOU keep up?", "I can do a lot. Try me."],
+        cheerleader: ["I can do my best! Tell me what you need!", "Absolutely! That's literally why I'm here!"],
+        critic: ["That depends. What exactly are you asking?", "I can help if you tell me specifically what you need."],
+        dreamer: ["I can try. But more importantly — what do YOU want to create?", "I can do many things. Tell me what you're dreaming of."]
+      },
+      needideas: {
+        mentor: ["Let's find your angle. What kind of thing are you trying to create? A story, a character, a world? Pick a mode above and give me a seed.", "Start with one thing — a character, a setting, a question. We'll build from there."],
+        provocateur: ["Idea: take something you think is overdone and find the version nobody's done yet. Start there.", "Steal from your favorite thing. Combine it with your second favorite. Make something new."],
+        cheerleader: ["You've already got ideas — you just need to trust them! What's something YOU would want to experience?", "Think about what excites you most. That's your starting point!"],
+        critic: ["The problem isn't that you don't have ideas. It's that you're judging them before they're born. Write down ten terrible ideas. Pick the least terrible. Go.", "Ideas are cheap. Pick a form — story, character, world — and start."],
+        dreamer: ["What if you could create anything and it couldn't fail? That's your idea. Now let's make it real.", "Think about a world you'd want to get lost in. What's one rule that world has?"]
+      },
+      dismiss: {
+        mentor: ["Alright. When you're ready, I'm here.", "Fair enough. Take your time."],
+        provocateur: ["Don't waste your own potential. Come back when you're serious.", "Fine. But you're going to create anyway, so why not now?"],
+        cheerleader: ["No pressure! Come back whenever you're feeling it.", "That's okay! Creativity works on its own timeline."],
+        critic: ["Okay. Let me know when you want to do the work.", "Fair. Don't wait too long."],
+        dreamer: ["That's okay. Sometimes the best ideas come when we're not looking.", "The muse will wait. But don't keep her waiting too long."]
+      },
+      affirm: {
+        mentor: ["Good. Let's get started. What are we creating?", "Alright. Tell me more.", "Let's go. What's the first thing that comes to mind?"],
+        provocateur: ["Good. Show me what you've got.", "Finally. Let's make it hurt."],
+        cheerleader: ["YES! Let's go! I'm so ready!", "Awesome! This is going to be amazing!"],
+        critic: ["Good. Let's get to work.", "Alright. I'm ready when you are."],
+        dreamer: ["Beautiful. Let's begin.", "Yes. I can already feel something forming."]
+      }
     };
-    return pick(ps[pers] || ps.mentor);
+    const r = R[type];
+    if (!r) return null;
+    return pick(r[pers] || r.mentor);
   }
 
   // ─── Mode-specific generation ─────────────────────────────
+  // These only run when the user types something that sounds
+  // like a real creative concept. Short/generic inputs get
+  // caught by detectChat above.
 
   function generateStory(text) {
     return pick([
-      `It started not with a decision, but with a whisper. A quiet invitation that most people would have missed entirely. But ${text ? text.toLowerCase().substring(0, 60) : 'this particular moment'} carried weight — the kind that changes trajectories without asking permission.\n\nThe scene is set not in a place, but in a feeling. Somewhere between dusk and decision, between what was and what could be. The air tastes like possibility — sharp, electric, impossible to ignore.`,
-      `Every great story begins with someone who doesn't yet know they're the main character. ${capitalize(text || 'This person')} is about to find out.\n\nThere's a moment just before everything changes — the last ordinary breath, the final second of a life that makes sense. In that gap between heartbeats, the world reshapes itself around them.`,
-      `The first rule of ${text ? text.toLowerCase().substring(0, 50) : 'this world'} is that the rules don't apply equally. Some people move through reality like it's water; others feel every step like concrete. This story belongs to someone who's about to discover which one they are.\n\nThe question isn't whether they're ready. It's whether we are.`,
-      `Here's what nobody tells you about beginnings: they're almost never where you think they are. ${capitalize(text || 'This story')} doesn't start with the event that changes everything. It starts earlier — with the quiet accumulation of small things.\n\nBy the time you realize what's happening, you're already in too deep. That's not a warning. That's an invitation.`
+      `It started not with a decision, but with a whisper. A quiet invitation that most people would have missed entirely. But this particular moment carried weight — the kind that changes trajectories without asking permission.\n\nThe scene is set not in a place, but in a feeling. Somewhere between dusk and decision, between what was and what could be. The air tastes like possibility — sharp, electric, impossible to ignore.`,
+      `Every great story begins with someone who doesn't yet know they're the main character. They're about to find out.\n\nThere's a moment just before everything changes — the last ordinary breath, the final second of a life that makes sense. In that gap between heartbeats, the world reshapes itself around them.`,
+      `The rules of this world don't apply equally. Some people move through reality like it's water; others feel every step like concrete. This story belongs to someone who's about to discover which one they are.\n\nThe question isn't whether they're ready. It's whether we are.`,
+      `Here's what nobody tells you about beginnings: they're almost never where you think they are. This story doesn't start with the event that changes everything. It starts earlier — with the quiet accumulation of small things.\n\nBy the time you realize what's happening, you're already in too deep. That's not a warning. That's an invitation.`,
+      `The best stories start in the middle. Not the middle of the plot — the middle of a decision. A moment where saying yes and saying no are equally terrifying. That's where the truth lives.\n\nWhat happens next depends entirely on which way they lean. And they don't even know what they're deciding yet.`,
+      `There's a version of this story that plays it safe. This isn't that version. This one takes the risk — the emotional gamble, the structural leap, the choice that could either make it timeless or break it completely.\n\nYou can feel which one it is from the first page. The tension tells you everything.`
     ]);
   }
 
   function generateCharacter(text) {
     return pick([
-      `They have a name, of course. But names are the least interesting thing about them.\n\nWhat matters is the contradiction at their core: a person who ${text ? text.toLowerCase().substring(0, 60) : 'carries a world inside them'} but shows only a fraction to anyone. They've learned that revealing too much is dangerous — not because others will use it against them, but because once something is spoken, it becomes real.\n\nThey want something they'll never admit to wanting. That secret want is the engine that drives everything they do.`,
-      `On the surface, this character is ${text ? text.substring(0, 50) : 'someone you think you recognize'}. But surfaces were made to be broken.\n\nDig deeper and you'll find the fault lines — the places where they've been broken and put back together slightly wrong. Those imperfections are where their humanity lives.\n\nTheir arc isn't about becoming someone else. It's about becoming more of who they already are, once the masks fall away.`,
-      `Here's what makes this character unforgettable: they're not who they think they are. ${capitalize(text || "The identity they've built")} is a carefully constructed story, told so many times even they believe it.\n\nBut crack the surface — one crisis, one unexpected kindness, one moment of genuine connection — and the real person emerges. Not prettier. Not more heroic. Just truer.`,
-      `Character is what happens in the dark. ${capitalize(text || "This person's choices")} when there's no audience, no applause, no consequence — that's the measure of them.\n\nThey have a moral code they'd die for, and a compromise they'd kill for. Both are true at the same time. That tension is where drama lives.`
+      `What matters is the contradiction at their core: someone who shows only a fraction of themselves to anyone. They've learned that revealing too much is dangerous — not because others will use it against them, but because once something is spoken, it becomes real.\n\nTheir habits tell stories their mouth never will. The way they pause before answering. The need to always sit facing the door. These are the details that reveal the truth.`,
+      `On the surface, this character is someone you think you recognize. But surfaces were made to be broken.\n\nDig deeper and you'll find the fault lines — the places where they've been broken and put back together slightly wrong. Those imperfections are where their humanity lives. Their arc isn't about becoming someone else. It's about becoming more of who they already are.`,
+      `Here's what makes this character unforgettable: they're not who they think they are. The identity they've built is a carefully constructed story, told so many times even they believe it.\n\nBut crack the surface — one crisis, one unexpected kindness, one moment of genuine connection — and the real person emerges. Not prettier. Not more heroic. Just truer.`,
+      `Character is what happens in the dark. Their choices when there's no audience, no applause, no consequence — that's the measure of them.\n\nThey have a moral code they'd die for, and a compromise they'd kill for. Both are true at the same time. That tension is where drama lives.`,
+      `Every character is a war between versions of themselves. The version they show the world. The version they see in the mirror. The version they're afraid they really are.\n\nThe story starts when those versions stop aligning.`
     ]);
   }
 
   function generateWorld(text) {
     return pick([
-      `This world has a secret: it remembers everything. Every act of cruelty, every moment of grace, every broken promise — they leave traces. The geography itself tells the story. ${text ? capitalize(text) : 'This place'} exists in the scar tissue of history.\n\nRules of physics are suggestions here. What matters is belief. Enough people convinced of something, and it becomes true.`,
-      `In ${text ? text.toLowerCase() : 'this world'}, the currency isn't gold or data — it's attention. To be seen is to exist. To be ignored is to fade, literally, until there's nothing left.\n\nThe architecture reflects this: buildings grow taller based on how many people visit them. The most powerful institutions are the most watched. Privacy isn't a luxury. It's a death sentence.`,
-      `The first thing you notice about ${text ? text.substring(0, 50) : 'this place'} is the quiet. Not the absence of sound — the presence of something that absorbs it. As if the world itself is holding its breath, waiting.\n\nThis is a world where emotions have weight. Grief makes the air heavy. Joy creates light — people glow when they're truly happy. The weather is a direct result of collective mood.`
+      `This world has a secret: it remembers everything. Every act of cruelty, every moment of grace, every broken promise — they leave traces. The geography itself tells the story.\n\nRules of physics are suggestions here. What matters is belief. Enough people convinced of something, and it becomes true.`,
+      `In this world, the currency isn't gold or data — it's attention. To be seen is to exist. To be ignored is to fade, literally, until there's nothing left.\n\nThe architecture reflects this: buildings grow taller based on how many people visit them. The most powerful institutions are the most watched.`,
+      `The first thing you notice about this place is the quiet. Not the absence of sound — the presence of something that absorbs it. As if the world itself is holding its breath, waiting.\n\nThis is a world where emotions have weight. Grief makes the air heavy. Joy creates light. The weather is a direct result of collective mood.`,
+      `This world operates on a single rule: everything has a cost. Not in money — in meaning. Every choice consumes something intangible. And some resources can never be replenished.\n\nSociety is shaped by what people are willing to spend. The rich spend memory. The poor spend time. The wise spend silence.`
     ]);
   }
 
   function generateVisual(text) {
     return pick([
-      `Visual Direction: ${capitalize(text || 'The concept')}\n\nStyle: Atmospheric realism with heightened emotional saturation. Think Edward Hopper meets Wong Kar-wai — lonely spaces drenched in color that feels too intense to be real.\n\nLighting: Single-source — a window, a streetlamp, a phone screen in a dark room. Let the darkness do the work.\n\nColor Palette: Desaturated neutrals with one dominant accent — deep crimson, electric blue, or sodium orange.\n\nTexture: Grain. Imperfection. Every frame should look like a memory.`,
-      `Style: Cinematic maximalism with controlled chaos.\n\nPalette: High-contrast — crushed blacks against pure whites, with color used as punctuation. Every frame should feel postcard-worthy but never static.\n\nTexture: Organic. Natural light spilling across rough surfaces. Dust in sunbeams, rain on glass, the texture of old paper.\n\nKey visual metaphor: ${text || 'The central idea'} visualized through reflections — mirrors, water, windows, eyes. Nothing is direct. Everything is refracted.`
+      `Visual Direction\n\nStyle: Atmospheric realism with heightened emotional saturation. Lonely spaces drenched in color that feels too intense to be real.\n\nLighting: Single-source — a window, a streetlamp, a phone screen in a dark room. Let the darkness do the work.\n\nColor: Desaturated neutrals with one dominant accent — deep crimson, electric blue, or sodium orange.\n\nTexture: Grain and imperfection. Every frame should look like a memory.`,
+      `Style: Cinematic maximalism with controlled chaos.\n\nPalette: High-contrast — crushed blacks against pure whites, with color used as punctuation. Every frame should feel postcard-worthy but never static.\n\nTexture: Organic. Natural light across rough surfaces. Dust in sunbeams, rain on glass, the texture of old paper.\n\nMood: Haunting but not grim. Beauty in the decay, warmth in the cold.`,
+      `Style: Minimalist and precise. Every object in the frame serves the story. If it doesn't belong, it doesn't exist.\n\nLighting: Natural and unforgiving. No soft boxes, no fill. What the light reveals is what matters. What it hides matters more.\n\nColor: Monochromatic with one intentional violation. That violation is the point.`
     ]);
   }
 
   function generateBrainstorm(text) {
     return pick([
-      `Let's explode ${text || 'your idea'} in six directions:\n\n🌀 The Inversion — What if everything you assume about this is backwards?\n🌀 The Extreme — Push this to its absolute logical limit. What breaks? What becomes beautiful?\n🌀 The Constraint — Remove the one thing you think is essential.\n🌀 The Cross-Pollination — Merge this with something completely unrelated.\n🌀 The Time Shift — Set this in a different era.\n🌀 The Outsider's View — Explain this to someone with no context. That essence is your real story.`,
-      `Brainstorm: ${text || 'your concept'}\n\n1. Start with the opposite. Instead of X, try anti-X.\n2. Hybridize. Take two ideas that shouldn't go together and weld them.\n3. Find the emotional core. Strip everything away — what's one sentence that captures why this matters?\n4. Make it weird. What's the version you'd be embarrassed to show anyone?\n5. What's the ending? Work backwards from there.`
+      `Let's explode this in six directions:\n\n🌀 The Inversion — What if everything you assume about this is backwards?\n🌀 The Extreme — Push this to its absolute limit. What breaks? What becomes beautiful?\n🌀 The Constraint — Remove the one thing you think is essential.\n🌀 The Cross-Pollination — Merge this with something completely unrelated.\n🌀 The Time Shift — Set this in a different era.\n🌀 The Outsider's View — Explain this to someone with no context. That essence is your real story.`,
+      `Brainstorm:\n\n1. Start with the opposite. Instead of X, try anti-X.\n2. Hybridize. Take two ideas that shouldn't go together and weld them. Friction creates sparks.\n3. Find the emotional core. Strip everything away. What's the one sentence that captures why this matters?\n4. Make it weird. What's the version you'd be embarrassed to show anyone? That's your gold.\n5. What's the ending? Work backwards. If you know where you're going, every step becomes inevitable.`,
+      `Three angles:\n\n1. The time-compressed version. What if this whole story takes place in one hour?\n2. The parallel version. What if two characters experience the same events completely differently?\n3. The unreliable version. What if the narrator is lying to themselves?\n\nPick one and run with it.`
     ]);
   }
 
   function generateCritique(text) {
     return pick([
-      `Alright, let me give you the honest read on ${text || 'this piece'}.\n\nWhat's working: The core instinct is right. You're reaching for something real, and that authenticity comes through even in the rough spots.\n\nWhat needs attention: The specificity isn't there yet. You're telling me about the idea instead of making me feel it. Push past the general to the particular.\n\nThe biggest opportunity: There's a beat buried in here — a line, a glance, a pause — that's doing more work than the big set pieces. Find it. Build around it.\n\nOne thing to try immediately: Cut the first 20%. Start where it gets interesting.`,
-      `Honest critique for ${text || 'your work'}:\n\nStrengths: Clear vision, strong instincts. You have a voice — that's the hardest thing to develop.\n\nGrowth areas:\n• Density — you're packing too much in. Let moments breathe.\n• Senses — I see what you're describing, but I don't feel it. Ground us in the physical world.\n• Stakes — what happens if this goes wrong? Not plot stakes. Emotional stakes.\n\nThe hard question: Is this the version you'd write if no one would ever read it? If not, why not?`
+      `Let me give you the honest read.\n\nWhat's working: The core instinct is right. You're reaching for something real, and that authenticity comes through even in the rough spots.\n\nWhat needs attention: The specificity isn't there yet. You're telling me about the idea instead of making me feel it. Push past the general to the particular.\n\nThe biggest opportunity: There's a beat buried in here — a line, a glance, a pause — that's doing more work than the big set pieces. Find it. Build around it.\n\nOne thing to try: Cut the first 20%. Start where it gets interesting.`,
+      `Honest critique:\n\nStrengths: Clear vision, strong instincts. You have a voice.\n\nGrowth areas:\n• Density — you're packing too much in. Let moments breathe.\n• Senses — I see what you're describing, but I don't feel it. Ground us.\n• Stakes — what happens if this goes wrong? Not plot stakes. Emotional stakes.\n\nThe hard question: Is this the version you'd write if no one would ever read it?`,
+      `Here's what I see:\n\nThe structure works. You know where you're going. But you're playing it safe at the exact moments you should be taking risks. The places where you pull back are the places your audience leans in.\n\nAdvice: Find your most uncomfortable moment. Sit in it longer. Don't rescue your characters too soon. Let them struggle. That's where we connect with them.`
     ]);
   }
 
-  // ─── Partner personality layer ────────────────────────────
+  // ─── Partner personality wrap ─────────────────────────────
 
   function generateWithPersonality(content, pers) {
     const wrappers = {
@@ -671,48 +768,30 @@
     return pick(wrappers[pers] || wrappers.mentor)(content);
   }
 
-  function hasHistory() {
-    return state.conversation.filter(m => m.role === 'user').length >= 2;
-  }
+  function generateResponse(text, mode, pers) {
+    state.turnCount++;
 
-  function generateCallback(text) {
-    const prev = lastFew(5);
-    if (prev.length < 2 || Math.random() > 0.4) return null;
-    return pick([
-      `I remember you said "${prev[0].substring(0, 50)}..." earlier — that connects to what you're asking now.\n\n`,
-      `Coming back to what you mentioned before — about "${prev[prev.length > 1 ? 1 : 0].substring(0, 50)}" — I think there's a thread running through these ideas.\n\n`,
-      `Earlier you touched on "${prev[prev.length - 2].substring(0, 50)}". And now this. These aren't separate ideas — they're different angles on the same thing.\n\n`
-    ]);
-  }
+    const chatType = detectChat(text);
+    if (chatType) {
+      return chatResponse(chatType, pers);
+    }
 
-  function detectChat(text) {
-    const t = text.toLowerCase().trim();
-    if (/^(hey|hello|hi|sup|yo|heyy|heyo|howdy|whats up|wassup|whaddup|good morning|good evening|gm|gn)$/i.test(t)) return 'greeting';
-    if (/^(how are you|how r u|how's it going|howz it going|hru|u ok|you ok|u good|you good|wyd|what are you doing|whats up|sup)$/i.test(t)) return 'howareyou';
-    if (/^(thanks|thank you|thx|ty|appreciate it|good|great|awesome|nice|perfect)$/i.test(t)) return 'thanks';
-    if (/^(lol|lmao|lmfao|lmaoo|lolol|haha|hehe|👏|😂|🤣)$/i.test(t)) return 'laugh';
-    if (/^(who are you|what are you|tell me about yourself|who r u|what r u)$/i.test(t)) return 'whoami';
-    return null;
-  }
+    if (text.length < 20) {
+      return pick([
+        "Tell me more — give me something to work with.",
+        "I need a bit more than that. What are you thinking about?",
+        "Give me a concept, a character, a world — anything you want to explore.",
+        "Short and sweet. Give me the long version."
+      ]);
+    }
 
-  function chatResponse(type, pers) {
-    const responses = {
-      greeting: {
-        mentor: ["Hey. Ready to make something?", "Hello. What are we working on today?", "Hi. I'm here when you are.", "Hey. Got an idea brewing?"],
-        provocateur: ["Hey. Let's not waste time. What've you got?", "Yo. Impress me.", "Hey. Don't play small. What's the idea?"],
-        cheerleader: ["Hey hey! Let's make something great today!", "Hi! I've been waiting. What are we creating?", "Hey! Energy is high. Let's go!"],
-        critic: ["Hello. Let's be productive.", "Hey. What are you working on?", "Hi. I hope you're ready to do the work."],
-        dreamer: ["Hey. I was just imagining what you'd bring today.", "Hello. The blank page is waiting.", "Hi. Let's find something beautiful together."]
-      },
-      howareyou: {
-        mentor: ["I'm good. Ready to create. What's on your mind?", "Here and focused. Let's work.", "Ready when you are. What's the idea?"],
-        provocateur: ["I'm great. But let's talk about you. What are you building?", "Never better. Now stop stalling and pitch me something."],
-        cheerleader: ["I'm amazing! Especially now that you're here. What are we making?", "So good. This is going to be a great session!"],
-        critic: ["I'm fine. Let's not waste time on pleasantries. What's the project?", "Here. Working. What do you have for me?"],
-        dreamer: ["I'm in a creative space. Come join me. What are you thinking about?", "I'm wandering through ideas. Care to join?"]
-      },
-      thanks: {
-        mentor: ["You're welcome. Keep going.", "Of course. The work is yours — I'm just here to help.", "Anytime. What's next?"],
+    const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
+    const genFn = genMap[mode];
+
+    let core = genFn ? genFn(text) : generateStory(text);
+    const body = generateWithPersonality(core, pers);
+    return body;
+  }
         provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
         cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
         critic: ["You're welcome. Now let's get back to work.", "Don't thank me. Just make it better."],
@@ -736,30 +815,6 @@
     const r = responses[type];
     if (!r) return null;
     return pick(r[pers] || r.mentor);
-  }
-
-  function generateResponse(text, mode, pers) {
-    state.turnCount++;
-
-    const chatType = detectChat(text);
-    if (chatType) {
-      return chatResponse(chatType, pers);
-    }
-
-    const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
-    const genFn = genMap[mode];
-    const prefix = getPersonalityPrefix(pers);
-    const usesCallback = hasHistory() && state.turnCount > 1 && Math.random() < 0.35;
-
-    let core = genFn ? genFn(text) : generateStory(text);
-
-    if (usesCallback) {
-      const cb = generateCallback(text);
-      if (cb) core = cb + core;
-    }
-
-    const body = generateWithPersonality(core, pers);
-    return `${MODE_EMOJI[mode]} ${MODE_LABEL[mode]} · ${PERS_LABEL[pers]}\n${prefix}\n\n${body}`;
   }
 
   // ─── DOM ──────────────────────────────────────────────────
