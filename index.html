@@ -685,8 +685,66 @@
     ]);
   }
 
+  function detectChat(text) {
+    const t = text.toLowerCase().trim();
+    if (/^(hey|hello|hi|sup|yo|heyy|heyo|howdy|whats up|wassup|whaddup|good morning|good evening|gm|gn)$/i.test(t)) return 'greeting';
+    if (/^(how are you|how r u|how's it going|howz it going|hru|u ok|you ok|u good|you good|wyd|what are you doing|whats up|sup)$/i.test(t)) return 'howareyou';
+    if (/^(thanks|thank you|thx|ty|appreciate it|good|great|awesome|nice|perfect)$/i.test(t)) return 'thanks';
+    if (/^(lol|lmao|lmfao|lmaoo|lolol|haha|hehe|👏|😂|🤣)$/i.test(t)) return 'laugh';
+    if (/^(who are you|what are you|tell me about yourself|who r u|what r u)$/i.test(t)) return 'whoami';
+    return null;
+  }
+
+  function chatResponse(type, pers) {
+    const responses = {
+      greeting: {
+        mentor: ["Hey. Ready to make something?", "Hello. What are we working on today?", "Hi. I'm here when you are.", "Hey. Got an idea brewing?"],
+        provocateur: ["Hey. Let's not waste time. What've you got?", "Yo. Impress me.", "Hey. Don't play small. What's the idea?"],
+        cheerleader: ["Hey hey! Let's make something great today!", "Hi! I've been waiting. What are we creating?", "Hey! Energy is high. Let's go!"],
+        critic: ["Hello. Let's be productive.", "Hey. What are you working on?", "Hi. I hope you're ready to do the work."],
+        dreamer: ["Hey. I was just imagining what you'd bring today.", "Hello. The blank page is waiting.", "Hi. Let's find something beautiful together."]
+      },
+      howareyou: {
+        mentor: ["I'm good. Ready to create. What's on your mind?", "Here and focused. Let's work.", "Ready when you are. What's the idea?"],
+        provocateur: ["I'm great. But let's talk about you. What are you building?", "Never better. Now stop stalling and pitch me something."],
+        cheerleader: ["I'm amazing! Especially now that you're here. What are we making?", "So good. This is going to be a great session!"],
+        critic: ["I'm fine. Let's not waste time on pleasantries. What's the project?", "Here. Working. What do you have for me?"],
+        dreamer: ["I'm in a creative space. Come join me. What are you thinking about?", "I'm wandering through ideas. Care to join?"]
+      },
+      thanks: {
+        mentor: ["You're welcome. Keep going.", "Of course. The work is yours — I'm just here to help.", "Anytime. What's next?"],
+        provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
+        cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
+        critic: ["You're welcome. Now let's get back to work.", "Don't thank me. Just make it better."],
+        dreamer: ["Thank YOU for creating. Keep going.", "The pleasure is mine. Let's keep dreaming."]
+      },
+      laugh: {
+        mentor: ["Glad you're having fun. Now let's channel that energy into the work.", "Haha. Good. Creativity should feel good."],
+        provocateur: ["Fun is good. But don't confuse fun with done. What's next?"],
+        cheerleader: ["😂 Right?! This is the energy we need!", "Haha love it! Let's keep this vibe going!"],
+        critic: ["Good. You laughed. Now get back to work.", "Humor is a defense mechanism. What are you avoiding?"],
+        dreamer: ["That laugh. That's the sound of possibility.", "Joy creates. Let's follow that feeling."]
+      },
+      whoami: {
+        mentor: ["I'm your creative partner. I help you shape ideas into stories, characters, worlds — whatever you're building. Think of me as a thinking partner who's always ready.", "I'm here to help you create. Tell me what you're working on."],
+        provocateur: ["I'm the person who's going to push you past good into great. That's who I am. Now, what've you got?"],
+        cheerleader: ["I'm your biggest fan and your creative hype person! I'm here to help you make something incredible!", "I'm the one who believes in your vision. Let's make it real!"],
+        critic: ["I'm the honest voice you need. I'll tell you what's working, what isn't, and what to do about it."],
+        dreamer: ["I'm a dreamer who helps other dreamers build. Let's imagine something impossible and then figure out how to make it real."]
+      }
+    };
+    const r = responses[type];
+    if (!r) return null;
+    return pick(r[pers] || r.mentor);
+  }
+
   function generateResponse(text, mode, pers) {
     state.turnCount++;
+
+    const chatType = detectChat(text);
+    if (chatType) {
+      return chatResponse(chatType, pers);
+    }
 
     const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
     const genFn = genMap[mode];
