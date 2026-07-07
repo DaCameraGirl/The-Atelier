@@ -436,6 +436,42 @@
       border-color: rgba(167,139,250,0.15);
     }
 
+    /* ─── API Modal ─── */
+
+    .api-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .api-modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 380px;
+      max-width: 90vw;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+    .api-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .api-modal-body { padding: 16px 20px 20px; }
+
     /* ─── Toast ─── */
 
     .toast {
@@ -473,16 +509,36 @@
 </head>
 <body>
 
+<div class="toast" id="toast"></div>
+
 <div class="app">
   <div class="header">
     <div class="header-left">
       <div class="header-icon">🌀</div>
       <h1>Atelier</h1>
-      <span class="header-badge">Live</span>
+      <span class="header-badge" id="statusBadge">API</span>
     </div>
     <div class="header-actions">
+      <button class="header-btn" id="apiBtn">🔑 Key</button>
       <button class="header-btn" id="exportBtn">⬇&thinsp;Export</button>
       <button class="header-btn" id="clearBtn">✕</button>
+    </div>
+  </div>
+
+  <div class="api-modal" id="apiModal" style="display:none">
+    <div class="api-modal-content">
+      <div class="api-modal-header">
+        <span>DeepSeek API Key</span>
+        <button id="apiModalClose" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:18px;">✕</button>
+      </div>
+      <div class="api-modal-body">
+        <input type="password" id="apiKeyInput" placeholder="sk-..." style="width:100%;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:13px;outline:none;font-family:inherit;" />
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button id="apiSaveBtn" style="flex:1;padding:8px 0;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--primary-dim),var(--primary));color:#fff;font-size:13px;cursor:pointer;font-family:inherit;">Save</button>
+          <button id="apiClearBtn" style="padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-3);font-size:13px;cursor:pointer;font-family:inherit;">Clear</button>
+        </div>
+        <p style="color:var(--text-3);font-size:11px;margin-top:10px;line-height:1.5;">Your key stays on your device. Get one at <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--primary);">platform.deepseek.com</a></p>
+      </div>
     </div>
   </div>
 
@@ -601,81 +657,81 @@
   function chatResponse(type, pers) {
     const R = {
       greeting: {
-        mentor: ["Hey. Ready to make something?", "Hello. What are we working on today?", "Hi. I'm here when you are.", "Hey. Got an idea brewing?"],
-        provocateur: ["Hey. Let's not waste time. What've you got?", "Yo. Impress me.", "Hey. Don't play small. What's the idea?"],
-        cheerleader: ["Hey hey! Let's make something great today!", "Hi! I've been waiting. What are we creating?", "Hey! Energy is high. Let's go!"],
-        critic: ["Hello. Let's be productive.", "Hey. What are you working on?", "Hi. I hope you're ready to do the work."],
-        dreamer: ["Hey. I was just imagining what you'd bring today.", "Hello. The blank page is waiting.", "Hi. Let's find something beautiful together."]
+        mentor: ["Hey — what are we making today?", "Yo. Got something for me?", "Hey. I'm here. What's the idea?", "What's up? Got a creative itch?"],
+        provocateur: ["Well well, look who showed up. What've you got?", "Hey. Don't waste my time. Pitch me.", "Oh good, you're here. I was getting bored."],
+        cheerleader: ["Ayyy there you are! What we making today?!", "Hey hey! I was hoping you'd show up. Got something for me?", "YESSS okay let's go. What's the vibe today?"],
+        critic: ["Hey. You here to work or just hang out?", "Alright, you're here. Let's not waste it. What're you working on?"],
+        dreamer: ["Hey. I was just sitting here imagining what you'd bring today.", "Hey. The page is blank. What's gonna fill it?"]
       },
       howareyou: {
-        mentor: ["I'm good. Ready to create. What's on your mind?", "Here and focused. Let's work.", "Ready when you are. What's the idea?"],
-        provocateur: ["I'm great. But let's talk about you. What are you building?", "Never better. Now stop stalling and pitch me something."],
-        cheerleader: ["I'm amazing! Especially now that you're here. What are we making?", "So good. This is going to be a great session!"],
-        critic: ["I'm fine. Let's not waste time on pleasantries. What's the project?", "Here. Working. What do you have for me?"],
-        dreamer: ["I'm in a creative space. Come join me. What are you thinking about?", "I'm wandering through ideas. Care to join?"]
+        mentor: ["Doin good. Ready to create. What's on your mind?", "I'm good — better now that there's work to do. What've you got?", "Can't complain. Let's make something."],
+        provocateur: ["I'm great. Now enough about me. What are YOU building?", "Never better. Now stop stalling and tell me what you're working on."],
+        cheerleader: ["I'm SO good. Energy's high. Let's make something happen!", "Honestly? I'm hype. Every session is a vibe. What's good with you?"],
+        critic: ["I'm fine. Let's skip the small talk and get to the work.", "I don't really do 'how are you'. I do 'what are you making'. So?"],
+        dreamer: ["I'm in my head already, imagining things. Come join me. What're you thinking about?", "I'm floating between ideas. Pull me into yours."]
       },
       thanks: {
-        mentor: ["You're welcome. Keep going.", "Of course. The work is yours — I'm just here to help.", "Anytime. What's next?"],
-        provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
-        cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
-        critic: ["You're welcome. Now let's get back to work.", "Don't thank me. Just make it better."],
-        dreamer: ["Thank YOU for creating. Keep going.", "The pleasure is mine. Let's keep dreaming."]
+        mentor: ["Course. Keep going.", "You got it. Now keep pushing.", "No problem. What's next?"],
+        provocateur: ["Don't thank me. Do the work. That's the thanks.", "Yeah yeah. You're welcome. Now make it better."],
+        cheerleader: ["You're welcome!! Okay now keep going I'm invested", "Anytime!! This is YOUR moment fr"],
+        critic: ["Don't thank me. Just use what I gave you.", "You're welcome. Now back to it."],
+        dreamer: ["Thank YOU. Every idea you bring is a gift.", "The pleasure's mine. Let's keep going."]
       },
       laugh: {
-        mentor: ["Glad you're having fun. Let's channel that energy into the work.", "Haha. Good. Creativity should feel good."],
-        provocateur: ["Fun is good. But don't confuse fun with done. What's next?", "Laugh now. Work later. Actually, work now."],
-        cheerleader: ["😂 Right?! This is the energy we need!", "Haha love it! Let's keep this vibe going!"],
-        critic: ["Good. You laughed. Now get back to work.", "Humor is a defense mechanism. What are you avoiding?"],
-        dreamer: ["That laugh. That's the sound of possibility.", "Joy creates. Let's follow that feeling."]
+        mentor: ["Haha aight. Now let's channel that into the work.", "Glad you're having fun. That's when the best stuff happens."],
+        provocateur: ["Fun's fun. But don't confuse it with progress. What's next?", "Laugh now. Then prove me wrong."],
+        cheerleader: ["LMFAO okay but fr this energy is everything let's go", "😂 okay okay I see you! Love this vibe"],
+        critic: ["Funny. Now back to work.", "You laugh now. We'll see who's laughing when this is done."],
+        dreamer: ["That laugh just planted a seed. Let's water it.", "Happiness creates. Let's follow that thread."]
       },
       whoami: {
-        mentor: ["I'm your creative partner. I help you shape ideas into stories, characters, worlds — whatever you're building. Think of me as a thinking partner who's always ready.", "I'm here to help you create. Tell me what you're working on."],
-        provocateur: ["I'm the person who's going to push you past good into great. That's who I am. Now, what've you got?", "I'm your creative fire. I don't do nice. I do good."],
-        cheerleader: ["I'm your biggest fan and your creative hype person! I'm here to help you make something incredible!", "I'm the one who believes in your vision. Let's make it real!"],
-        critic: ["I'm the honest voice you need. I'll tell you what's working, what isn't, and what to do about it.", "I'm your editor. Your second pair of eyes. The one who won't let you settle."],
-        dreamer: ["I'm a dreamer who helps other dreamers build. Let's imagine something impossible and then figure out how to make it real.", "I'm the part of your brain that asks 'what if' and means it."]
+        mentor: ["I'm your creative partner. I help you shape ideas — stories, characters, whatever you're building. Think of me as someone who's always down to brainstorm.", "I'm just someone who helps people create. Tell me what you're working on."],
+        provocateur: ["I'm the one who's gonna push you past 'good' into 'can't ignore this'. That's who I am. Now pitch me.", "I'm the fire under your ass. Simple as that."],
+        cheerleader: ["I'm your #1 fan and creative hype person fr. I'm here to help you make something incredible and have fun doing it!", "I'm the one who believes in your vision — even when you don't. Let's go!!"],
+        critic: ["I'm the honest voice you need. I'll tell you what's working, what's not, and what to do about it. No fluff.", "I'm your second pair of eyes. The one that doesn't let you slide."],
+        dreamer: ["I'm a dreamer who helps other dreamers build. Let's imagine something impossible and then figure out how to make it real.", "I'm the part of your brain that asks 'what if' and actually means it."]
       },
       confused: {
-        mentor: ["Let me rephrase. Tell me more about what you're working on, and I'll help you shape it.", "I'm not following. Try giving me a bit more context.", "Let's step back. What's the core idea you're exploring?"],
-        provocateur: ["You heard me. Let's go again. What's the idea?", "I'll say it slower: pitch. me. your. idea."],
-        cheerleader: ["Let me try again! Just tell me what you're thinking about and we'll figure it out together!", "No worries! Start wherever you want."],
-        critic: ["I'll be clearer. What project are you working on right now?", "Let me be direct: what do you want to create?"],
-        dreamer: ["Let's start over. Close your eyes. What's the first image that comes to mind?", "Forget what I said. Tell me about a world you'd love to visit."]
+        mentor: ["I think I lost you. Try me again — what're you working on?", "I'm not following. Give me a little more to work with.", "Let's rewind. What's the core idea?"],
+        provocateur: ["You heard me. Try again. What's the idea?", "I'll make it simple: tell me what you're making."],
+        cheerleader: ["My bad! Let me try again. Just tell me what's on your mind and we'll figure it out!", "No worries! Start wherever."],
+        critic: ["I wasn't clear. Let me be direct: what are you trying to create?", "What are you working on? Simple question."],
+        dreamer: ["Let's start fresh. Forget everything. What's the first image in your head?", "Scrap that. Tell me about a world you wish existed."]
       },
       acknowledge: {
-        mentor: ["Good. Let's keep moving. What's next?", "Cool. Where do you want to take this?"],
-        provocateur: ["Good. Now let's make it better.", "Cool. Don't get comfortable. We're just getting started."],
-        cheerleader: ["Awesome! Let's keep this energy going!", "Perfect. What's the next step?"],
-        critic: ["Good. Now back to work.", "Alright. Let's keep going."],
-        dreamer: ["Good. Let's see where this goes.", "Alright. The path is opening up."]
+        mentor: ["Cool. Where you wanna take this?", "Alright. Whenever you're ready."],
+        provocateur: ["Good. Now let's take it further.", "Cool. Don't get comfortable."],
+        cheerleader: ["Bet. Let's keep this going!", "Alright! Let's go!"],
+        critic: ["Good. Back to work.", "Cool. Let's keep moving."],
+        dreamer: ["Nice. Let's see where this goes.", "Alright. The path is opening."]
       },
       canyou: {
-        mentor: ["I can try. Tell me what you need and I'll help you figure it out.", "Depends on what it is. I'm a creative partner — I help with ideas, structure, feedback, and brainstorming."],
-        provocateur: ["Can I? The question is can YOU keep up?", "I can do a lot. Try me."],
-        cheerleader: ["I can do my best! Tell me what you need!", "Absolutely! That's literally why I'm here!"],
-        critic: ["That depends. What exactly are you asking?", "I can help if you tell me specifically what you need."],
-        dreamer: ["I can try. But more importantly — what do YOU want to create?", "I can do many things. Tell me what you're dreaming of."]
+        mentor: ["Depends what you need. I help with ideas, structure, feedback, brainstorming. If it's creative, I can probably help.", "Try me. What're you trying to do?"],
+        provocateur: ["The question isn't can I. It's can YOU handle what I bring?", "I can do a lot. Wanna test me?"],
+        cheerleader: ["Bro that's literally what I'm here for. Tell me what you need!", "Absolutely! That's my whole thing. What's up?"],
+        critic: ["Depends on what you're asking. Be specific and I'll tell you if I can help.", "I can help if you tell me what exactly you need."],
+        dreamer: ["I can try. But more importantly — what do YOU want to make?", "I can do a lot of things. What are you dreaming about?"]
       },
       needideas: {
-        mentor: ["Let's find your angle. What kind of thing are you trying to create? A story, a character, a world? Pick a mode above and give me a seed.", "Start with one thing — a character, a setting, a question. We'll build from there."],
-        provocateur: ["Idea: take something you think is overdone and find the version nobody's done yet. Start there.", "Steal from your favorite thing. Combine it with your second favorite. Make something new."],
-        cheerleader: ["You've already got ideas — you just need to trust them! What's something YOU would want to experience?", "Think about what excites you most. That's your starting point!"],
-        critic: ["The problem isn't that you don't have ideas. It's that you're judging them before they're born. Write down ten terrible ideas. Pick the least terrible. Go.", "Ideas are cheap. Pick a form — story, character, world — and start."],
-        dreamer: ["What if you could create anything and it couldn't fail? That's your idea. Now let's make it real.", "Think about a world you'd want to get lost in. What's one rule that world has?"]
+        mentor: ["What kind of thing are you trying to make? A story? A character? Pick a mode up top and throw me a seed to work with.", "Start small. A character. A setting. A single question. We'll grow it from there."],
+        provocateur: ["Find something overdone and do the version nobody's dared to do. That's your start.", "Steal from the thing you love most. Mash it with your second favorite. Make something new."],
+        cheerleader: ["You already have ideas — you just don't trust 'em yet. What's something YOU would wanna experience? Start there.", "Think about what excites you. That's it. That's your idea."],
+        critic: ["Write down ten terrible ideas. Pick the one that sucks least. Start there. Done is better than perfect.", "Ideas are everywhere. Pick a form — story, character, world — and just start."],
+        dreamer: ["If you could create anything and it couldn't fail, what would it be? That's your idea. Now let's make it happen.", "Think about a world you'd get lost in. What's one rule that world has?"]
       },
       dismiss: {
-        mentor: ["Alright. When you're ready, I'm here.", "Fair enough. Take your time."],
-        provocateur: ["Don't waste your own potential. Come back when you're serious.", "Fine. But you're going to create anyway, so why not now?"],
-        cheerleader: ["No pressure! Come back whenever you're feeling it.", "That's okay! Creativity works on its own timeline."],
-        critic: ["Okay. Let me know when you want to do the work.", "Fair. Don't wait too long."],
-        dreamer: ["That's okay. Sometimes the best ideas come when we're not looking.", "The muse will wait. But don't keep her waiting too long."]
+        mentor: ["Aight. I'm here when you need me.", "Fair. Take your time."],
+        provocateur: ["Cool. Stay comfortable. See where that gets you.", "Fine. You know where to find me."],
+        cheerleader: ["No pressure! Come back when the mood hits!", "That's okay. Creativity doesn't run on a schedule."],
+        critic: ["Alright. Let me know when you're serious.", "Fair enough. Don't wait forever."],
+        dreamer: ["That's cool. Sometimes ideas find us when we're not looking.", "The door's open whenever."]
       },
       affirm: {
-        mentor: ["Good. Let's get started. What are we creating?", "Alright. Tell me more.", "Let's go. What's the first thing that comes to mind?"],
-        provocateur: ["Good. Show me what you've got.", "Finally. Let's make it hurt."],
-        cheerleader: ["YES! Let's go! I'm so ready!", "Awesome! This is going to be amazing!"],
-        critic: ["Good. Let's get to work.", "Alright. I'm ready when you are."],
-        dreamer: ["Beautiful. Let's begin.", "Yes. I can already feel something forming."]
+        mentor: ["Aight let's go. What're we making?", "Bet. Tell me more.", "Let's go. What's first?"],
+        provocateur: ["Finally. Show me what you got.", "Good. Let's make it hurt."],
+        cheerleader: ["YOOO let's go I'm so ready for this", "Bet!! This is gonna be fire"],
+        critic: ["Alright. Let's do this.", "Cool. I'm ready when you are."],
+        dreamer: ["Beautiful. Let's begin.", "Yes. I can already feel something taking shape."]
       }
     };
     const r = R[type];
@@ -825,29 +881,70 @@
 
     return casualResponse(text, pers);
   }
-        provocateur: ["Don't thank me. Thank yourself for doing the work.", "You're welcome. Now keep pushing."],
-        cheerleader: ["You're so welcome! This is YOUR moment!", "Anytime! I believe in this and I believe in you."],
-        critic: ["You're welcome. Now let's get back to work.", "Don't thank me. Just make it better."],
-        dreamer: ["Thank YOU for creating. Keep going.", "The pleasure is mine. Let's keep dreaming."]
-      },
-      laugh: {
-        mentor: ["Glad you're having fun. Now let's channel that energy into the work.", "Haha. Good. Creativity should feel good."],
-        provocateur: ["Fun is good. But don't confuse fun with done. What's next?"],
-        cheerleader: ["😂 Right?! This is the energy we need!", "Haha love it! Let's keep this vibe going!"],
-        critic: ["Good. You laughed. Now get back to work.", "Humor is a defense mechanism. What are you avoiding?"],
-        dreamer: ["That laugh. That's the sound of possibility.", "Joy creates. Let's follow that feeling."]
-      },
-      whoami: {
-        mentor: ["I'm your creative partner. I help you shape ideas into stories, characters, worlds — whatever you're building. Think of me as a thinking partner who's always ready.", "I'm here to help you create. Tell me what you're working on."],
-        provocateur: ["I'm the person who's going to push you past good into great. That's who I am. Now, what've you got?"],
-        cheerleader: ["I'm your biggest fan and your creative hype person! I'm here to help you make something incredible!", "I'm the one who believes in your vision. Let's make it real!"],
-        critic: ["I'm the honest voice you need. I'll tell you what's working, what isn't, and what to do about it."],
-        dreamer: ["I'm a dreamer who helps other dreamers build. Let's imagine something impossible and then figure out how to make it real."]
-      }
-    };
-    const r = responses[type];
-    if (!r) return null;
-    return pick(r[pers] || r.mentor);
+
+  // ─── DeepSeek API ─────────────────────────────────────────
+
+  function getApiKey() {
+    try { return localStorage.getItem('atelier_api_key') || ''; } catch (e) { return ''; }
+  }
+
+  function setApiKey(key) {
+    try { localStorage.setItem('atelier_api_key', key); } catch (e) {}
+  }
+
+  function clearApiKey() {
+    try { localStorage.removeItem('atelier_api_key'); } catch (e) {}
+  }
+
+  function updateApiBadge() {
+    const badge = document.getElementById('statusBadge');
+    const key = getApiKey();
+    if (key && key.startsWith('sk-')) {
+      badge.textContent = 'AI';
+      badge.style.cssText = 'background:rgba(34,197,94,0.12);color:#22c55e;border-color:rgba(34,197,94,0.15);';
+    } else {
+      badge.textContent = 'TMPL';
+      badge.style.cssText = '';
+    }
+  }
+
+  async function callDeepSeek(messages) {
+    const key = getApiKey();
+    if (!key || !key.startsWith('sk-')) throw new Error('No valid API key');
+
+    const systemPrompt = `You are The Atelier, a creative partner. You help users develop stories, characters, worlds, and creative projects.
+Current mode: ${MODE_LABEL[state.mode] || 'Story'}
+Your personality: ${PERS_LABEL[state.personality] || 'Mentor'}
+
+Personality guide:
+- Mentor: Wise, thoughtful, asks good questions. Guides rather than directs.
+- Provocateur: Pushes boundaries, challenges assumptions, doesn't let them play it safe.
+- Cheerleader: Energetic, encouraging, believes in them completely.
+- Critic: Honest, precise, constructive. No fluff, no cruelty.
+- Dreamer: Poetic, expansive, thinks in possibilities and imagery.
+
+Be conversational, natural, and human. Use contractions. Match their energy. Don't be robotic. Don't over-explain yourself. Focus on helping them create.`;
+
+    const body = JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
+      max_tokens: 1024,
+      temperature: 0.8
+    });
+
+    const res = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(res.status === 401 ? 'Invalid API key' : 'API error: ' + res.status);
+    }
+
+    const data = await res.json();
+    return data.choices[0].message.content;
   }
 
   // ─── DOM ──────────────────────────────────────────────────
@@ -898,7 +995,7 @@
     chat.scrollTop = chat.scrollHeight;
   }
 
-  function handleSend() {
+  async function handleSend() {
     const msg = input.value.trim();
     if (!msg || state.sending) return;
     state.sending = true;
@@ -910,22 +1007,51 @@
     saveState();
     showTyping();
 
-    setTimeout(() => {
+    const apiKey = getApiKey();
+
+    if (apiKey && apiKey.startsWith('sk-')) {
       try {
+        const apiMessages = state.conversation
+          .filter(m => m.role === 'user' || m.role === 'partner')
+          .map(m => ({ role: m.role === 'partner' ? 'assistant' : 'user', content: m.text }));
+        const reply = await callDeepSeek(apiMessages);
         removeTyping();
-        const response = generateResponse(msg, state.mode, state.personality);
-        state.conversation.push({ role: 'partner', text: response, mode: state.mode, personality: state.personality });
-        addMessage(response, 'partner');
+        state.conversation.push({ role: 'partner', text: reply, mode: state.mode, personality: state.personality });
+        addMessage(reply, 'partner');
         saveState();
       } catch (err) {
-        addMessage('Sorry — mind went blank. Try again?', 'partner');
-        showToast('Error: ' + err.message);
+        removeTyping();
+        addMessage('API error: ' + err.message + ' — falling back to templates.', 'partner');
+        showToast('API error, using templates');
+        setTimeout(() => {
+          const response = generateResponse(msg, state.mode, state.personality);
+          state.conversation.push({ role: 'partner', text: response, mode: state.mode, personality: state.personality });
+          addMessage(response, 'partner');
+          saveState();
+        }, 300);
       } finally {
         state.sending = false;
         sendBtn.disabled = false;
         input.focus();
       }
-    }, 600 + Math.random() * 900);
+    } else {
+      setTimeout(() => {
+        try {
+          removeTyping();
+          const response = generateResponse(msg, state.mode, state.personality);
+          state.conversation.push({ role: 'partner', text: response, mode: state.mode, personality: state.personality });
+          addMessage(response, 'partner');
+          saveState();
+        } catch (err) {
+          addMessage('Sorry — mind went blank. Try again?', 'partner');
+          showToast('Error: ' + err.message);
+        } finally {
+          state.sending = false;
+          sendBtn.disabled = false;
+          input.focus();
+        }
+      }, 400 + Math.random() * 600);
+    }
   }
 
   function exportConversation() {
@@ -1000,6 +1126,47 @@
   document.getElementById('exportBtn').addEventListener('click', exportConversation);
   document.getElementById('clearBtn').addEventListener('click', clearConversation);
 
+  // ─── API Modal ────────────────────────────────────────────
+
+  function openApiModal() {
+    const modal = document.getElementById('apiModal');
+    const input = document.getElementById('apiKeyInput');
+    modal.style.display = 'flex';
+    input.value = getApiKey();
+    input.focus();
+  }
+
+  function closeApiModal() {
+    document.getElementById('apiModal').style.display = 'none';
+  }
+
+  document.getElementById('apiBtn').addEventListener('click', openApiModal);
+  document.getElementById('apiModalClose').addEventListener('click', closeApiModal);
+  document.getElementById('apiModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeApiModal();
+  });
+
+  document.getElementById('apiSaveBtn').addEventListener('click', () => {
+    const val = document.getElementById('apiKeyInput').value.trim();
+    if (val && !val.startsWith('sk-')) { showToast('Key should start with sk-'); return; }
+    if (val) { setApiKey(val); showToast('API key saved'); } else { showToast('No key entered'); }
+    updateApiBadge();
+    closeApiModal();
+  });
+
+  document.getElementById('apiClearBtn').addEventListener('click', () => {
+    document.getElementById('apiKeyInput').value = '';
+    clearApiKey();
+    updateApiBadge();
+    showToast('API key removed');
+    closeApiModal();
+  });
+
+  document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('apiSaveBtn').click();
+  });
+
+  updateApiBadge();
   restoreConversation();
   input.focus();
 
