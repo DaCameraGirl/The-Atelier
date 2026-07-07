@@ -4,129 +4,224 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Atelier — Creative Partner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #09090b;
+      --surface: #111113;
+      --surface-2: #18181b;
+      --surface-3: #1f1f23;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.1);
+      --primary: #a78bfa;
+      --primary-dim: #7c5cf4;
+      --primary-glow: rgba(167,139,250,0.15);
+      --text: #f4f4f5;
+      --text-2: #a1a1aa;
+      --text-3: #71717a;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'DM Mono', monospace;
+      --header-h: 64px;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      background: #0d0d0d;
-      color: #e0e0e0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,80,240,0.08), transparent),
+                        radial-gradient(ellipse 50% 30% at 80% 100%, rgba(100,100,255,0.04), transparent);
+      color: var(--text);
+      font-family: var(--font);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 16px;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
     }
+
     .app {
-      max-width: 840px;
+      max-width: 860px;
       width: 100%;
-      background: #151515;
-      border-radius: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset;
       display: flex;
       flex-direction: column;
-      height: 92vh;
-      max-height: 800px;
+      height: 90vh;
+      max-height: 820px;
+      position: relative;
     }
+
+    .app::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.3), transparent);
+    }
+
+    /* ─── Header ─── */
+
     .header {
-      padding: 20px 28px;
-      background: #1a1a1a;
-      border-bottom: 1px solid #222;
+      height: var(--header-h);
+      padding: 0 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(17,17,19,0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 2;
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header h1 { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.3px; }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary-dim), var(--primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
     .header-badge {
-      font-size: 10px;
-      padding: 3px 10px;
+      font-size: 9px;
+      padding: 2px 8px;
       border-radius: 20px;
-      background: #6c5ce7;
-      color: #fff;
+      background: rgba(167,139,250,0.12);
+      color: var(--primary);
       font-weight: 500;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: 1px solid rgba(167,139,250,0.15);
+      margin-left: 2px;
     }
-    .header-actions { display: flex; gap: 8px; }
+
+    .header-actions { display: flex; gap: 6px; }
+
     .header-btn {
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid #333;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--border);
       background: transparent;
-      color: #888;
+      color: var(--text-3);
       font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    .header-btn:hover { border-color: #6c5ce7; color: #ccc; }
+    .header-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-2);
+      background: var(--surface-2);
+    }
+
+    /* ─── Chat ─── */
+
     .chat {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 28px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       scroll-behavior: smooth;
     }
+
     .chat::-webkit-scrollbar { width: 4px; }
     .chat::-webkit-scrollbar-track { background: transparent; }
-    .chat::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    .chat::-webkit-scrollbar-thumb:hover { background: #555; }
+    .chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .chat::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
     .message {
-      padding: 16px 20px;
-      border-radius: 16px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
       max-width: 88%;
       line-height: 1.65;
       font-size: 14px;
-      animation: msgIn 0.35s ease;
+      animation: msgIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
     }
+
     @keyframes msgIn {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+
     .message.user {
-      background: #1e1e1e;
-      color: #f0f0f0;
+      background: var(--surface-3);
+      color: var(--text);
       align-self: flex-end;
       border-bottom-right-radius: 4px;
+      border: 1px solid var(--border);
     }
+
     .message.partner {
-      background: #1a1a1a;
-      color: #d0d0d0;
+      background: linear-gradient(135deg, rgba(167,139,250,0.06), rgba(124,92,244,0.03));
+      color: var(--text-2);
       align-self: flex-start;
       border-bottom-left-radius: 4px;
-      border-left: 3px solid #6c5ce7;
+      border: 1px solid rgba(167,139,250,0.1);
+      border-left: 2px solid var(--primary-dim);
     }
+
     .message .label {
       font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #666;
+      letter-spacing: 0.8px;
+      color: var(--text-3);
       margin-bottom: 6px;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .message.partner .label {
-      color: #6c5ce7;
+
+    .message.partner .label { color: var(--primary); }
+
+    .message .body {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.7;
     }
-    .message .mode-tag {
-      display: inline-block;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: #222;
-      color: #888;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-    .message.partner .mode-tag { background: #2a2440; color: #8a7ce7; }
-    .message .body { white-space: pre-wrap; word-break: break-word; }
+
     .message .body p { margin-bottom: 10px; }
     .message .body p:last-child { margin-bottom: 0; }
+
+    /* ─── Empty State ─── */
+
     .empty-state {
       text-align: center;
-      color: #555;
       padding: 40px 20px;
       flex: 1;
       display: flex;
@@ -134,187 +229,260 @@
       justify-content: center;
       align-items: center;
     }
-    .empty-state .icon { font-size: 52px; margin-bottom: 18px; opacity: 0.6; }
-    .empty-state h3 { color: #999; font-size: 20px; margin-bottom: 8px; font-weight: 500; }
-    .empty-state p { font-size: 14px; color: #666; line-height: 1.6; max-width: 440px; }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(124,92,244,0.05));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(167,139,250,0.1);
+    }
+
+    .empty-state h3 {
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-3);
+      line-height: 1.6;
+      max-width: 400px;
+    }
+
     .suggestions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 24px;
     }
+
     .suggestions button {
-      padding: 8px 16px;
+      padding: 7px 16px;
       border-radius: 20px;
-      border: 1px solid #333;
-      background: transparent;
-      color: #888;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-3);
       font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
+      font-family: inherit;
     }
+
     .suggestions button:hover {
-      border-color: #6c5ce7;
-      color: #ccc;
-      background: #1a1a1a;
+      border-color: rgba(167,139,250,0.3);
+      color: var(--primary);
+      background: rgba(167,139,250,0.06);
     }
+
+    /* ─── Typing ─── */
+
     .typing {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 16px 20px;
-      background: #1a1a1a;
-      border-radius: 16px;
+      gap: 5px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, rgba(167,139,250,0.06), rgba(124,92,244,0.03));
+      border-radius: var(--radius);
       border-bottom-left-radius: 4px;
-      border-left: 3px solid #6c5ce7;
+      border: 1px solid rgba(167,139,250,0.1);
+      border-left: 2px solid var(--primary-dim);
       align-self: flex-start;
       max-width: 88%;
-      animation: msgIn 0.3s ease;
+      animation: msgIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .typing .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #6c5ce7;
-      animation: bounce 1.2s infinite;
+      background: var(--primary);
+      animation: typingBounce 1.4s infinite;
+      opacity: 0.5;
     }
-    .typing .dot:nth-child(2) { animation-delay: 0.15s; }
-    .typing .dot:nth-child(3) { animation-delay: 0.3s; }
-    @keyframes bounce {
+    .typing .dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
       0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30% { transform: translateY(-8px); opacity: 1; }
+      30% { transform: translateY(-6px); opacity: 1; }
     }
+
+    /* ─── Controls ─── */
+
     .controls {
-      padding: 16px 28px 20px;
-      border-top: 1px solid #222;
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       gap: 10px;
       flex-shrink: 0;
-      background: #151515;
+      background: rgba(17,17,19,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
+
     .mode-selector {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
     }
+
     .mode-btn {
-      padding: 5px 12px;
-      border-radius: 16px;
-      border: 1px solid #2a2a2a;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
       background: transparent;
-      color: #666;
+      color: var(--text-3);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .mode-btn:hover { color: var(--text-2); background: var(--surface-2); }
+    .mode-btn.active {
+      background: var(--surface-3);
+      color: var(--primary);
+      border-color: rgba(167,139,250,0.2);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-row input {
+      flex: 1;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .input-row input:focus {
+      border-color: rgba(167,139,250,0.3);
+      box-shadow: 0 0 0 3px rgba(167,139,250,0.08);
+    }
+
+    .input-row input::placeholder { color: var(--text-3); }
+
+    .input-row button {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: linear-gradient(135deg, var(--primary-dim), var(--primary));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+      letter-spacing: -0.2px;
+    }
+
+    .input-row button:hover { opacity: 0.9; transform: scale(1.02); }
+    .input-row button:active { transform: scale(0.98); }
+    .input-row button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .personality-row {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .personality-row .label {
+      color: var(--text-3);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+
+    .pers-btn {
+      padding: 3px 10px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-3);
       font-size: 11px;
       cursor: pointer;
       transition: all 0.2s;
       font-family: inherit;
     }
-    .mode-btn:hover { border-color: #6c5ce7; color: #aaa; }
-    .mode-btn.active { background: #6c5ce7; border-color: #6c5ce7; color: #fff; }
-    .input-row {
-      display: flex;
-      gap: 10px;
+
+    .pers-btn:hover { color: var(--text-2); background: var(--surface-2); }
+    .pers-btn.active {
+      color: var(--primary);
+      background: rgba(167,139,250,0.08);
+      border-color: rgba(167,139,250,0.15);
     }
-    .input-row input {
-      flex: 1;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid #2a2a2a;
-      background: #1a1a1a;
-      color: #f0f0f0;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.2s;
-      font-family: inherit;
-    }
-    .input-row input:focus { border-color: #6c5ce7; }
-    .input-row input::placeholder { color: #555; }
-    .input-row button {
-      padding: 12px 22px;
-      border-radius: 12px;
-      border: none;
-      background: #6c5ce7;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .input-row button:hover { background: #5a4bd1; }
-    .input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
-    .personality-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .personality-row .label {
-      color: #555;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-right: 4px;
-    }
-    .pers-btn {
-      padding: 3px 10px;
-      border-radius: 10px;
-      border: 1px solid #2a2a2a;
-      background: transparent;
-      color: #666;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .pers-btn:hover { border-color: #888; color: #aaa; }
-    .pers-btn.active { border-color: #6c5ce7; color: #6c5ce7; }
+
+    /* ─── Toast ─── */
+
     .toast {
       position: fixed;
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #ccc;
-      padding: 10px 24px;
-      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       opacity: 0;
-      transition: all 0.3s;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
       z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── Mobile ─── */
 
     @media (max-width: 600px) {
       body { padding: 0; }
-      .app { height: 100vh; max-height: none; border-radius: 0; }
+      .app { height: 100vh; max-height: none; border-radius: 0; border: none; }
       .chat { padding: 16px; }
       .controls { padding: 12px 16px 16px; }
-      .header { padding: 14px 16px; }
-      .message { max-width: 95%; font-size: 13px; }
-      .header h1 { font-size: 16px; }
-      .header-btn { font-size: 11px; padding: 4px 10px; }
+      .header { padding: 0 16px; height: 56px; }
+      .header h1 { font-size: 15px; }
+      .message { max-width: 95%; font-size: 13px; padding: 12px 14px; }
     }
   </style>
 </head>
 <body>
 
-<div class="app" id="app">
+<div class="app">
   <div class="header">
     <div class="header-left">
-      <h1>🌀 The Atelier</h1>
-      <span class="header-badge">LIVE</span>
+      <div class="header-icon">🌀</div>
+      <h1>Atelier</h1>
+      <span class="header-badge">Live</span>
     </div>
     <div class="header-actions">
-      <button class="header-btn" id="exportBtn" title="Export conversation as Markdown">⬇ Export</button>
-      <button class="header-btn" id="clearBtn" title="Clear conversation">✕ Clear</button>
+      <button class="header-btn" id="exportBtn">⬇&thinsp;Export</button>
+      <button class="header-btn" id="clearBtn">✕</button>
     </div>
   </div>
 
@@ -322,18 +490,18 @@
     <div class="empty-state" id="emptyState">
       <div class="icon">✨</div>
       <h3>Your creative partner is ready</h3>
-      <p>Pick a mode, choose a partner personality, and tell me what you're working on. Stories, characters, worlds, visuals — let's build something real together.</p>
+      <p>Pick a mode, choose how they talk, and tell me what you're working on.</p>
       <div class="suggestions">
-        <button data-prompt="A detective who solves crimes in a city where memories can be bought and sold">Try: Memory detective</button>
-        <button data-prompt="A world where music shapes physical reality">Try: Music world</button>
-        <button data-prompt="A character who can see 10 seconds into the future">Try: Future-seer</button>
-        <button data-prompt="A fantasy story about the last librarian">Try: Last librarian</button>
+        <button data-prompt="A detective who solves crimes in a city where memories can be bought and sold">Memory detective</button>
+        <button data-prompt="A world where music shapes physical reality">Music world</button>
+        <button data-prompt="A character who can see 10 seconds into the future">Future-seer</button>
+        <button data-prompt="A fantasy story about the last living librarian">Last librarian</button>
       </div>
     </div>
   </div>
 
   <div class="controls">
-    <div class="mode-selector" id="modeSelector">
+    <div class="mode-selector">
       <button class="mode-btn active" data-mode="story">📖 Story</button>
       <button class="mode-btn" data-mode="character">👤 Character</button>
       <button class="mode-btn" data-mode="world">🌍 World</button>
@@ -346,7 +514,7 @@
       <button id="sendBtn">Send</button>
     </div>
     <div class="personality-row">
-      <span class="label">Partner:</span>
+      <span class="label">Partner</span>
       <button class="pers-btn active" data-pers="mentor">🧠 Mentor</button>
       <button class="pers-btn" data-pers="provocateur">🔥 Provocateur</button>
       <button class="pers-btn" data-pers="cheerleader">🎉 Cheerleader</button>
@@ -408,7 +576,6 @@
   // ─── Response Engine ──────────────────────────────────────
 
   function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
-
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function lastFew(n) {
@@ -416,106 +583,64 @@
     return msgs.slice(-n).map(m => m.text);
   }
 
-  function getRecentTopic() {
-    const recent = lastFew(3);
-    if (recent.length > 1) return recent[recent.length - 1];
-    return null;
-  }
-
   function getPersonalityPrefix(pers) {
-    const prefs = {
-      mentor: [
-        "Here's what I'm thinking:",
-        "Let me offer you this:",
-        "I want you to consider:",
-        "The way I see it:",
-        "Let's sit with this for a moment:"
-      ],
-      provocateur: [
-        "Let's push this further:",
-        "Here's the hard truth:",
-        "Don't play it safe:",
-        "Let me challenge you:",
-        "What if we go deeper:"
-      ],
-      cheerleader: [
-        "This is where it gets exciting:",
-        "I LOVE where this is going:",
-        "You're onto something real:",
-        "This energy is everything:",
-        "Yes. Hell yes:"
-      ],
-      critic: [
-        "Let me be direct with you:",
-        "Here's what I see:",
-        "My honest assessment:",
-        "Let's look at this critically:",
-        "The unvarnished truth:"
-      ],
-      dreamer: [
-        "Imagine this:",
-        "What if:",
-        "In a world not unlike ours:",
-        "Picture this:",
-        "Let's dream a little:"
-      ]
+    const ps = {
+      mentor: ["Here's what I'm thinking:", "Let me offer you this:", "The way I see it:", "Let's sit with this for a moment:"],
+      provocateur: ["Let's push this further:", "Here's the hard truth:", "Don't play it safe:", "What if we go deeper:"],
+      cheerleader: ["This is where it gets exciting:", "You're onto something real:", "This energy is everything:", "Yes. Hell yes:"],
+      critic: ["Let me be direct with you:", "Here's what I see:", "My honest assessment:", "The unvarnished truth:"],
+      dreamer: ["Imagine this:", "What if:", "Picture this:", "Let's dream a little:"]
     };
-    return pick(prefs[pers] || prefs.mentor);
+    return pick(ps[pers] || ps.mentor);
   }
 
   // ─── Mode-specific generation ─────────────────────────────
 
   function generateStory(text) {
-    const openings = [
-      `It started not with a decision, but with a whisper. A quiet invitation that most people would have missed entirely. But ${text ? text.toLowerCase().substring(0, 60) : 'this particular moment'} carried weight — the kind that changes trajectories without asking permission.\n\nThe scene is set not in a place, but in a feeling. Somewhere between dusk and decision, between what was and what could be. The air tastes like possibility — sharp, electric, impossible to ignore.\n\nAnd there at the center of it all, a choice waits. Not the obvious one, not the easy one. The one that matters.`,
-      `Every great story begins with someone who doesn't yet know they're the main character. ${capitalize(text || 'This person')} is about to find out.\n\nThere's a moment just before everything changes — the last ordinary breath, the final second of a life that makes sense. In that gap between heartbeats, the world reshapes itself around them.\n\nWhat emerges on the other side won't be predictable. That's exactly why it's worth telling.`,
-      `The first rule of ${text ? text.toLowerCase().substring(0, 50) : 'this world'} is that the rules don't apply equally. Some people move through reality like it's water; others feel every step like concrete. This story belongs to someone who's about to discover which one they are.\n\nThey'll learn it the hard way — which, if we're being honest, is the only way worth learning. The scars will come first, then the wisdom, then the choice that defines everything that follows.\n\nThe question isn't whether they're ready. It's whether we are.`,
-      `Here's what nobody tells you about beginnings: they're almost never where you think they are. ${capitalize(text || 'This story')} doesn't start with the event that changes everything. It starts earlier — with the quiet accumulation of small things that make that event inevitable.\n\nA conversation that lingers too long. A door left unlocked. A question asked without expecting an answer.\n\nBy the time you realize what's happening, you're already in too deep. That's not a warning. That's an invitation.`
-    ];
-    return pick(openings);
+    return pick([
+      `It started not with a decision, but with a whisper. A quiet invitation that most people would have missed entirely. But ${text ? text.toLowerCase().substring(0, 60) : 'this particular moment'} carried weight — the kind that changes trajectories without asking permission.\n\nThe scene is set not in a place, but in a feeling. Somewhere between dusk and decision, between what was and what could be. The air tastes like possibility — sharp, electric, impossible to ignore.`,
+      `Every great story begins with someone who doesn't yet know they're the main character. ${capitalize(text || 'This person')} is about to find out.\n\nThere's a moment just before everything changes — the last ordinary breath, the final second of a life that makes sense. In that gap between heartbeats, the world reshapes itself around them.`,
+      `The first rule of ${text ? text.toLowerCase().substring(0, 50) : 'this world'} is that the rules don't apply equally. Some people move through reality like it's water; others feel every step like concrete. This story belongs to someone who's about to discover which one they are.\n\nThe question isn't whether they're ready. It's whether we are.`,
+      `Here's what nobody tells you about beginnings: they're almost never where you think they are. ${capitalize(text || 'This story')} doesn't start with the event that changes everything. It starts earlier — with the quiet accumulation of small things.\n\nBy the time you realize what's happening, you're already in too deep. That's not a warning. That's an invitation.`
+    ]);
   }
 
   function generateCharacter(text) {
-    const profiles = [
-      `They have a name, of course. But names are the least interesting thing about them.\n\nWhat matters is the contradiction at their core: a person who ${text ? text.toLowerCase().substring(0, 60) : 'carries a world inside them'} but shows only a fraction to anyone. They've learned that revealing too much is dangerous — not because others will use it against them, but because once something is spoken, it becomes real.\n\nTheir hands tell stories their mouth never will. The way they pause before answering. The habit of glancing at exits. These are the details that reveal the truth.\n\nThey want something they'll never admit to wanting. And that secret want is the engine that drives everything they do.`,
-      `On the surface, this character is ${text ? text.substring(0, 50) : 'someone you think you recognize'}. But surfaces were made to be broken.\n\nDig deeper and you'll find the fault lines — the places where they've been broken and put back together slightly wrong. Those imperfections are where their humanity lives. Their greatest strength is also their deepest wound: the thing that saves them will be the thing that almost destroyed them.\n\nThey don't know this yet. But they will.\n\nTheir arc isn't about becoming someone else. It's about becoming more of who they already are, once the masks fall away.`,
-      `Here's what makes this character unforgettable: they're not who they think they are. ${capitalize(text || 'The identity they\'ve built')} is a carefully constructed story, told so many times even they believe it.\n\nBut crack the surface — one crisis, one unexpected kindness, one moment of genuine connection — and the real person emerges. Not prettier. Not more heroic. Just truer.\n\nTheir defining trait isn't a quality. It's a question they've been running from. The story starts when they stop running.\n\nWatch what they do when no one's watching. That's who they really are.`,
-      `Character is what happens in the dark. ${capitalize(text || 'This person\'s choices')} when there's no audience, no applause, no consequence — that's the measure of them.\n\nThey have a moral code they'd die for, and a compromise they'd kill for. Both are true at the same time. That tension — the space between who they want to be and who they're capable of being — is where drama lives.\n\nEvery character is a war between versions of themselves. The winner determines the story.`
-    ];
-    return pick(profiles);
+    return pick([
+      `They have a name, of course. But names are the least interesting thing about them.\n\nWhat matters is the contradiction at their core: a person who ${text ? text.toLowerCase().substring(0, 60) : 'carries a world inside them'} but shows only a fraction to anyone. They've learned that revealing too much is dangerous — not because others will use it against them, but because once something is spoken, it becomes real.\n\nThey want something they'll never admit to wanting. That secret want is the engine that drives everything they do.`,
+      `On the surface, this character is ${text ? text.substring(0, 50) : 'someone you think you recognize'}. But surfaces were made to be broken.\n\nDig deeper and you'll find the fault lines — the places where they've been broken and put back together slightly wrong. Those imperfections are where their humanity lives.\n\nTheir arc isn't about becoming someone else. It's about becoming more of who they already are, once the masks fall away.`,
+      `Here's what makes this character unforgettable: they're not who they think they are. ${capitalize(text || "The identity they've built")} is a carefully constructed story, told so many times even they believe it.\n\nBut crack the surface — one crisis, one unexpected kindness, one moment of genuine connection — and the real person emerges. Not prettier. Not more heroic. Just truer.`,
+      `Character is what happens in the dark. ${capitalize(text || "This person's choices")} when there's no audience, no applause, no consequence — that's the measure of them.\n\nThey have a moral code they'd die for, and a compromise they'd kill for. Both are true at the same time. That tension is where drama lives.`
+    ]);
   }
 
   function generateWorld(text) {
-    const worlds = [
-      `This world has a secret: it remembers everything. Every act of cruelty, every moment of grace, every broken promise — they leave traces. The geography itself tells the story. ${text ? capitalize(text) : 'This place'} exists in the scar tissue of history.\n\nRules of physics are suggestions here. What matters is belief. Enough people convinced of something, and it becomes true. That's why the old stories warn about hope — it's the most dangerous force in the world because it changes things.\n\nSociety operates not on laws, but on stories. The people with the best stories hold the power. And someone is about to write a new one.`,
-      `In ${text ? text.toLowerCase() : 'this world'}, the currency isn't gold or data — it's attention. To be seen is to exist. To be ignored is to fade, literally, until there's nothing left but a whisper that fewer and fewer people remember.\n\nThe architecture reflects this: buildings grow taller based on how many people visit them. The most powerful institutions are the most watched. Privacy isn't a luxury. It's a death sentence.\n\nAnd somewhere in the margins, a small group of people have learned to look away from each other on purpose. They're the only truly invisible ones left. They're also the only ones who remember what the world was like before.\n\nThey're running out of time.`,
-      `The first thing you notice about ${text ? text.substring(0, 50) : 'this place'} is the quiet. Not the absence of sound — the presence of something that absorbs it. As if the world itself is holding its breath, waiting.\n\nThis is a world where emotions have weight. Grief makes the air heavy. Joy creates light, literally — people glow when they're truly happy. The weather is a direct result of collective mood. Cities have climate control not through technology, but through culture.\n\nWhich means war is a natural disaster. And peace is something that requires constant, deliberate effort.\n\nThey've managed it so far. Barely.`
-    ];
-    return pick(worlds);
+    return pick([
+      `This world has a secret: it remembers everything. Every act of cruelty, every moment of grace, every broken promise — they leave traces. The geography itself tells the story. ${text ? capitalize(text) : 'This place'} exists in the scar tissue of history.\n\nRules of physics are suggestions here. What matters is belief. Enough people convinced of something, and it becomes true.`,
+      `In ${text ? text.toLowerCase() : 'this world'}, the currency isn't gold or data — it's attention. To be seen is to exist. To be ignored is to fade, literally, until there's nothing left.\n\nThe architecture reflects this: buildings grow taller based on how many people visit them. The most powerful institutions are the most watched. Privacy isn't a luxury. It's a death sentence.`,
+      `The first thing you notice about ${text ? text.substring(0, 50) : 'this place'} is the quiet. Not the absence of sound — the presence of something that absorbs it. As if the world itself is holding its breath, waiting.\n\nThis is a world where emotions have weight. Grief makes the air heavy. Joy creates light — people glow when they're truly happy. The weather is a direct result of collective mood.`
+    ]);
   }
 
   function generateVisual(text) {
-    const directions = [
-      `Visual Direction: ${capitalize(text || 'The concept')}\n\nStyle: Atmospheric realism with heightened emotional saturation. Think Edward Hopper meets Wong Kar-wai — lonely spaces drenched in color that feels too intense to be real, which is exactly the point.\n\nLighting: Single-source, mostly. A window, a streetlamp, a phone screen in a dark room. Let the darkness do the work. The most important thing in the frame should be what's almost hidden.\n\nColor Palette: Desaturated neutrals with one dominant accent — deep crimson, electric blue, or sodium orange. Let the accent carry the emotional weight.\n\nTexture: Grain. Imperfection. Hand-processed film aesthetic. Nothing should feel clean or manufactured. Every frame should look like a memory.\n\nMotion: Slow pushes and pulls. Let the camera breathe. The most powerful moments are the ones we're forced to sit with.`,
-      `Style: Cinematic maximalism with controlled chaos.\n\nPalette: High-contrast — crushed blacks against pure whites, with color used as punctuation. Think 《Hero》 meets 《The Fall》. Every frame should be postcard-worthy but never static.\n\nTexture: Organic. Natural light spilling across rough surfaces. Dust in sunbeams, rain on glass, the texture of old paper.\n\nKey visual metaphor: ${text || 'The central idea'} visualized through reflections — mirrors, water, windows, eyes. Nothing is direct. Everything is refracted through something else.\n\nMood: Haunting but not grim. There's beauty in the decay, warmth in the cold. The image should feel like it's moments away from either shattering or resolving into something profound.`
-    ];
-    return pick(directions);
+    return pick([
+      `Visual Direction: ${capitalize(text || 'The concept')}\n\nStyle: Atmospheric realism with heightened emotional saturation. Think Edward Hopper meets Wong Kar-wai — lonely spaces drenched in color that feels too intense to be real.\n\nLighting: Single-source — a window, a streetlamp, a phone screen in a dark room. Let the darkness do the work.\n\nColor Palette: Desaturated neutrals with one dominant accent — deep crimson, electric blue, or sodium orange.\n\nTexture: Grain. Imperfection. Every frame should look like a memory.`,
+      `Style: Cinematic maximalism with controlled chaos.\n\nPalette: High-contrast — crushed blacks against pure whites, with color used as punctuation. Every frame should feel postcard-worthy but never static.\n\nTexture: Organic. Natural light spilling across rough surfaces. Dust in sunbeams, rain on glass, the texture of old paper.\n\nKey visual metaphor: ${text || 'The central idea'} visualized through reflections — mirrors, water, windows, eyes. Nothing is direct. Everything is refracted.`
+    ]);
   }
 
   function generateBrainstorm(text) {
-    const seeds = [
-      `Let's explode ${text || 'your idea'} in six directions:\n\n🌀 The Inversion — What if everything you assume about this is backwards? The hero isn't trying to save the world — they're trying to destroy it for the right reasons.\n\n🌀 The Extreme — Push this to its absolute logical limit. If ${text ? text.substring(0, 40) : 'this concept'} were amplified 10x, what breaks? What becomes beautiful?\n\n🌀 The Constraint — Remove the one thing you think is essential. Now rebuild it. What emerges when you can't rely on the obvious?\n\n🌀 The Cross-Pollination — Merge this with something completely unrelated. What happens when ${text ? text.substring(0, 30) : 'your idea'} meets quantum physics? Gardening? Jazz?\n\n🌀 The Time Shift — Set this in a different era. How does it change? What stays the same?\n\n🌀 The Outsider's View — Explain this to someone who has no context for it. What do you have to distill it down to? That essence is your real story.`,
-      `Brainstorm session for: ${text || 'your concept'}\n\n1. Let's start with the opposite approach. Instead of X, try anti-X. Instead of building up, tear down. Instead of adding, subtract. What's the minimalist version that still works?\n\n2. Now let's hybridize. Take two genres, two worlds, two ideas that shouldn't go together, and weld them. The friction creates sparks.\n\n3. Let's find the emotional core. Strip away all the plot, all the worldbuilding, all the mechanics. What's one sentence that captures why this matters? If you can't find it, nothing else will work.\n\n4. Now let's make it weird. What's the version of this you'd be embarrassed to show anyone? That's where the original stuff lives.\n\n5. Finally: what's the ending? Work backwards from there. If you know where you're going, every step becomes inevitable.`
-    ];
-    return pick(seeds);
+    return pick([
+      `Let's explode ${text || 'your idea'} in six directions:\n\n🌀 The Inversion — What if everything you assume about this is backwards?\n🌀 The Extreme — Push this to its absolute logical limit. What breaks? What becomes beautiful?\n🌀 The Constraint — Remove the one thing you think is essential.\n🌀 The Cross-Pollination — Merge this with something completely unrelated.\n🌀 The Time Shift — Set this in a different era.\n🌀 The Outsider's View — Explain this to someone with no context. That essence is your real story.`,
+      `Brainstorm: ${text || 'your concept'}\n\n1. Start with the opposite. Instead of X, try anti-X.\n2. Hybridize. Take two ideas that shouldn't go together and weld them.\n3. Find the emotional core. Strip everything away — what's one sentence that captures why this matters?\n4. Make it weird. What's the version you'd be embarrassed to show anyone?\n5. What's the ending? Work backwards from there.`
+    ]);
   }
 
   function generateCritique(text) {
-    const critiques = [
-      `Alright, let me give you the honest read on ${text || 'this piece'}.\n\nWhat's working: The core instinct is right. You're reaching for something real, something that matters to you, and that authenticity comes through even in the rough spots. The ambition here is worth protecting.\n\nWhat needs attention: The specificity isn't there yet. You're telling me about the idea instead of making me feel it. Push past the general to the particular — the exact detail that only exists in THIS version of this story.\n\nThe biggest opportunity: Your strongest moment isn't where you think it is. There's a beat buried in here — a line, a glance, a pause — that's doing more work than the big set pieces. Find it. Build around it.\n\nOne thing to try immediately: Cut the first 20%. Start where it gets interesting. Trust your audience to catch up.`,
-      `Honest critique for ${text || 'your work'}:\n\nStrengths: Clear vision, strong instincts. You have a voice — that's the hardest thing to develop, and you already have it. The bones are good.\n\nGrowth areas:\n• Density — you're packing too much in. Let moments breathe. Not everything needs to be significant.\n• Senses — I see what you're describing, but I don't smell, hear, or feel it. Ground us in the physical world.\n• Stakes — I need to know what happens if this goes wrong. Not plot stakes. Emotional stakes.\n\nThe hard question: Is this the version you'd write if no one would ever read it? If not, why not? The version you'd write for yourself is always better.\n\nMy recommendation: Write the version that scares you. Then edit it down to something that still scares you but also works. That's the sweet spot.`
-    ];
-    return pick(critiques);
+    return pick([
+      `Alright, let me give you the honest read on ${text || 'this piece'}.\n\nWhat's working: The core instinct is right. You're reaching for something real, and that authenticity comes through even in the rough spots.\n\nWhat needs attention: The specificity isn't there yet. You're telling me about the idea instead of making me feel it. Push past the general to the particular.\n\nThe biggest opportunity: There's a beat buried in here — a line, a glance, a pause — that's doing more work than the big set pieces. Find it. Build around it.\n\nOne thing to try immediately: Cut the first 20%. Start where it gets interesting.`,
+      `Honest critique for ${text || 'your work'}:\n\nStrengths: Clear vision, strong instincts. You have a voice — that's the hardest thing to develop.\n\nGrowth areas:\n• Density — you're packing too much in. Let moments breathe.\n• Senses — I see what you're describing, but I don't feel it. Ground us in the physical world.\n• Stakes — what happens if this goes wrong? Not plot stakes. Emotional stakes.\n\nThe hard question: Is this the version you'd write if no one would ever read it? If not, why not?`
+    ]);
   }
 
   // ─── Partner personality layer ────────────────────────────
@@ -523,78 +648,60 @@
   function generateWithPersonality(content, pers) {
     const wrappers = {
       mentor: [
-        (c) => `${pick(["That's a solid direction. Let me help you refine it.", "I can work with this. Here's what I'd like you to consider:", "Good instincts. Let's build on that."])}\n\n${c}\n\n${pick(["What resonates with you most from that?", "Take what works, leave what doesn't. This is yours.", "How does that land with you?", "Let that sit for a moment, then tell me what comes next."])}`,
-        (c) => `${c}\n\n${pick(["A question for you: what do you think comes next?", "The next step is yours. I'm here to help you figure it out.", "Your instincts got you this far. Trust them, but verify them with work.", "Now — what's the version of this that feels true to you?"])}`,
+        (c) => pick(["That's a solid direction. Let me help you refine it.", "I can work with this. Here's what I'd like you to consider:", "Good instincts. Let's build on that."]) + '\n\n' + c + '\n\n' + pick(["What resonates with you most from that?", "Take what works, leave what doesn't.", "How does that land with you?", "Now — what's the version of this that feels true to you?"]),
+        (c) => c + '\n\n' + pick(["A question for you: what do you think comes next?", "Your instincts got you this far. Trust them.", "The next step is yours. I'm here to help you figure it out."])
       ],
       provocateur: [
-        (c) => `${pick(["Let's stop being polite.", "I'm going to say what you're afraid to admit:", "Comfort is the enemy of great work."])}\n\n${c}\n\n${pick(["Now do it again, but better.", "That's just the warm-up. What's the real version?", "If that doesn't make you a little uncomfortable, you're not there yet.", "Good. Now do it without the safety net."])}`,
-        (c) => `${pick(["You're holding back.", "Safe is boring. Let's fix that.", "What would this look like if you weren't afraid to fail?"])}\n\n${c}\n\n${pick(["Your audience can smell caution. Don't give them caution.", "The work that matters makes you nervous. If you're comfortable, start over.", "Stop protecting yourself from your own potential."])}`,
+        (c) => pick(["Let's stop being polite.", "I'm going to say what you're afraid to admit:", "Comfort is the enemy of great work."]) + '\n\n' + c + '\n\n' + pick(["Now do it again, but better.", "That's just the warm-up. What's the real version?", "Good. Now do it without the safety net."]),
+        (c) => pick(["You're holding back.", "Safe is boring. Let's fix that.", "What would this look like if you weren't afraid to fail?"]) + '\n\n' + c + '\n\n' + pick(["Your audience can smell caution. Don't give them caution.", "The work that matters makes you nervous. If you're comfortable, start over."])
       ],
       cheerleader: [
-        (c) => `${pick(["YES. This is IT.", "I'm so excited about where this is going.", "You have something real here. Let's make it sing."])}\n\n${c}\n\n${pick(["THIS is why you're the one to tell this story.", "Keep going. You're closer than you think.", "I believe in this. More importantly, I believe in you.", "The world needs this version. The one only you can make."])}`,
-        (c) => `${pick(["You're on fire. Keep going.", "This energy is everything.", "I'm genuinely excited about what you're building here."])}\n\n${c}\n\n${pick(["Trust your instincts. They're leading you somewhere real.", "You've got this. You've ALWAYS got this.", "Every great thing started exactly where you are right now."])}`,
+        (c) => pick(["YES. This is IT.", "I'm so excited about where this is going.", "You have something real here. Let's make it sing."]) + '\n\n' + c + '\n\n' + pick(["THIS is why you're the one to tell this story.", "Keep going. You're closer than you think.", "The world needs this version. The one only you can make."]),
+        (c) => pick(["You're on fire. Keep going.", "This energy is everything.", "I'm genuinely excited about what you're building here."]) + '\n\n' + c + '\n\n' + pick(["Trust your instincts. They're leading you somewhere real.", "You've got this. You've ALWAYS got this."])
       ],
       critic: [
-        (c) => `${pick(["Let's be honest about what's not working.", "I'm going to tell you what I'd tell my closest collaborator.", "You don't need praise. You need the truth."])}\n\n${c}\n\n${pick(["Take what's useful, ignore the rest. But don't ignore all of it.", "You asked for honest feedback. This is it.", "Fix the foundation before you decorate the walls.", "The good news: everything I just pointed out is fixable."])}`,
-        (c) => `${pick(["Here's what no one else will tell you:", "I'm not impressed yet. But I want to be.", "Let me be blunt: this needs work."])}\n\n${c}\n\n${pick(["You can do better. I know it because you're here, doing the work.", "Don't defend. Listen. Then decide what to keep.", "The gap between good and great is exactly this kind of feedback."])}`,
+        (c) => pick(["Let's be honest about what's not working.", "I'm going to tell you what I'd tell my closest collaborator.", "You don't need praise. You need the truth."]) + '\n\n' + c + '\n\n' + pick(["Take what's useful, ignore the rest. But don't ignore all of it.", "Fix the foundation before you decorate the walls.", "The good news: everything I just pointed out is fixable."]),
+        (c) => pick(["Here's what no one else will tell you:", "I'm not impressed yet. But I want to be.", "Let me be blunt: this needs work."]) + '\n\n' + c + '\n\n' + pick(["You can do better. I know it because you're here doing the work.", "Don't defend. Listen. Then decide what to keep."])
       ],
       dreamer: [
-        (c) => `${pick(["Let's go somewhere unexpected.", "Close your eyes and imagine:", "What if the rules don't apply here?"])}\n\n${c}\n\n${pick(["Let that breathe. What does it make you feel?", "The best ideas don't arrive fully formed. They arrive as questions.", "Stay with that feeling a little longer.", "That's the seed. Water it."])}`,
-        (c) => `${pick(["Drift with me for a moment.", "Let's find the poetry in this.", "Not what it is — what it COULD be."])}\n\n${c}\n\n${pick(["The impossible is just the possible we haven't tried yet.", "Dreams are maps to places that don't exist yet. Let's build one.", "Reality is overrated. What's your ideal version?", "The most practical thing you can do is dream without limits. Then figure out the logistics."])}`,
+        (c) => pick(["Let's go somewhere unexpected.", "Close your eyes and imagine:", "What if the rules don't apply here?"]) + '\n\n' + c + '\n\n' + pick(["Let that breathe. What does it make you feel?", "Stay with that feeling a little longer.", "That's the seed. Water it."]),
+        (c) => pick(["Drift with me for a moment.", "Let's find the poetry in this.", "Not what it is — what it COULD be."]) + '\n\n' + c + '\n\n' + pick(["The impossible is just the possible we haven't tried yet.", "Dreams are maps to places that don't exist yet. Let's build one."])
       ]
     };
-
-    const personWrappers = wrappers[pers] || wrappers.mentor;
-    const wrapper = pick(personWrappers);
-    return wrapper(content);
+    return pick(wrappers[pers] || wrappers.mentor)(content);
   }
 
   function hasHistory() {
-    const userMsgs = state.conversation.filter(m => m.role === 'user');
-    return userMsgs.length >= 2;
+    return state.conversation.filter(m => m.role === 'user').length >= 2;
   }
 
   function generateCallback(text) {
     const prev = lastFew(5);
     if (prev.length < 2 || Math.random() > 0.4) return null;
     return pick([
-      `I remember you said "${prev[0].substring(0, 50)}..." earlier — that connects to what you're asking now. Here's what I see:\n\n`,
-      `Coming back to what you mentioned before — about "${prev[prev.length > 1 ? 1 : 0].substring(0, 50)}" — I think there's a thread running through these ideas. Let me pull on it:\n\n`,
-      `Earlier you touched on "${prev[prev.length - 2].substring(0, 50)}". And now you're exploring this. These aren't separate ideas — they're different angles on the same thing. Here's what I think that thing is:\n\n`
+      `I remember you said "${prev[0].substring(0, 50)}..." earlier — that connects to what you're asking now.\n\n`,
+      `Coming back to what you mentioned before — about "${prev[prev.length > 1 ? 1 : 0].substring(0, 50)}" — I think there's a thread running through these ideas.\n\n`,
+      `Earlier you touched on "${prev[prev.length - 2].substring(0, 50)}". And now this. These aren't separate ideas — they're different angles on the same thing.\n\n`
     ]);
   }
 
   function generateResponse(text, mode, pers) {
     state.turnCount++;
 
-    const genMap = {
-      story: generateStory,
-      character: generateCharacter,
-      world: generateWorld,
-      visual: generateVisual,
-      brainstorm: generateBrainstorm,
-      critique: generateCritique
-    };
-
+    const genMap = { story: generateStory, character: generateCharacter, world: generateWorld, visual: generateVisual, brainstorm: generateBrainstorm, critique: generateCritique };
+    const genFn = genMap[mode];
     const prefix = getPersonalityPrefix(pers);
-    const latest = lastFew(1);
     const usesCallback = hasHistory() && state.turnCount > 1 && Math.random() < 0.35;
 
-    const genFn = genMap[mode];
     let core = genFn ? genFn(text) : generateStory(text);
-    let body;
 
     if (usesCallback) {
-      const callback = generateCallback(text);
-      if (callback) {
-        core = callback + core;
-      }
+      const cb = generateCallback(text);
+      if (cb) core = cb + core;
     }
 
-    body = generateWithPersonality(core, pers);
-
-    const header = `**${MODE_EMOJI[mode]} ${MODE_LABEL[mode]} · ${PERS_LABEL[pers]}**\n${prefix}`;
-    return `${header}\n\n${body}`;
+    const body = generateWithPersonality(core, pers);
+    return `${MODE_EMOJI[mode]} ${MODE_LABEL[mode]} · ${PERS_LABEL[pers]}\n${prefix}\n\n${body}`;
   }
 
   // ─── DOM ──────────────────────────────────────────────────
@@ -602,15 +709,15 @@
   function addMessage(text, role) {
     if (emptyState && emptyState.parentNode) emptyState.remove();
     const div = document.createElement('div');
-    div.className = `message ${role}`;
+    div.className = 'message ' + role;
     const label = document.createElement('div');
     label.className = 'label';
     label.textContent = role === 'user' ? 'You' : '🌀 Atelier';
-    const bodyDiv = document.createElement('div');
-    bodyDiv.className = 'body';
-    bodyDiv.textContent = text;
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.textContent = text;
     div.appendChild(label);
-    div.appendChild(bodyDiv);
+    div.appendChild(body);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
   }
@@ -637,9 +744,7 @@
     if (!state.conversation || state.conversation.length === 0) return;
     if (emptyState && emptyState.parentNode) emptyState.remove();
     const valid = state.conversation.filter(m => m && m.text && m.role);
-    valid.forEach(msg => {
-      addMessage(msg.text, msg.role);
-    });
+    valid.forEach(m => addMessage(m.text, m.role));
     if (valid.length !== state.conversation.length) {
       state.conversation = valid;
       saveState();
@@ -659,7 +764,6 @@
     saveState();
     showTyping();
 
-    const delay = 600 + Math.random() * 900;
     setTimeout(() => {
       try {
         removeTyping();
@@ -668,53 +772,48 @@
         addMessage(response, 'partner');
         saveState();
       } catch (err) {
-        addMessage('Sorry, something hiccuped — try again?', 'partner');
+        addMessage('Sorry — mind went blank. Try again?', 'partner');
         showToast('Error: ' + err.message);
       } finally {
         state.sending = false;
         sendBtn.disabled = false;
         input.focus();
       }
-    }, delay);
+    }, 600 + Math.random() * 900);
   }
 
   function exportConversation() {
-    if (state.conversation.length === 0) {
-      showToast('Nothing to export yet.');
-      return;
-    }
-    let md = `# The Atelier — Creative Session\n\n`;
+    if (state.conversation.length === 0) { showToast('Nothing to export yet.'); return; }
+    let md = '# The Atelier — Creative Session\n\n';
     const modes = new Set(state.conversation.filter(m => m.mode).map(m => MODE_LABEL[m.mode] || m.mode));
-    const personalities = new Set(state.conversation.filter(m => m.personality).map(m => PERS_LABEL[m.personality] || m.personality));
-    md += `**Modes:** ${[...modes].join(', ') || 'Various'}\n`;
-    md += `**Partners:** ${[...personalities].join(', ') || 'Various'}\n`;
-    md += `**Date:** ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-    md += `**Messages:** ${state.conversation.length}\n\n`;
-    md += `---\n\n`;
-    state.conversation.forEach((msg, i) => {
-      const label = msg.role === 'user' ? '**You**' : '**🌀 Atelier**';
-      md += `### ${label}\n\n${msg.text}\n\n`;
-      if (i < state.conversation.length - 1) md += `---\n\n`;
+    const pers = new Set(state.conversation.filter(m => m.personality).map(m => PERS_LABEL[m.personality] || m.personality));
+    md += '**Modes:** ' + ([...modes].join(', ') || 'Various') + '\n';
+    md += '**Partners:** ' + ([...pers].join(', ') || 'Various') + '\n';
+    md += '**Date:** ' + new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + '\n';
+    md += '**Messages:** ' + state.conversation.length + '\n\n---\n\n';
+    state.conversation.forEach((m, i) => {
+      md += '### ' + (m.role === 'user' ? '**You**' : '**🌀 Atelier**') + '\n\n' + m.text + '\n\n';
+      if (i < state.conversation.length - 1) md += '---\n\n';
     });
     const blob = new Blob([md], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `atelier-session-${new Date().toISOString().slice(0, 10)}.md`;
+    a.download = 'atelier-' + new Date().toISOString().slice(0, 10) + '.md';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('Conversation exported!');
+    showToast('Exported!');
   }
 
   function clearConversation() {
     if (state.conversation.length === 0) return;
-    if (!confirm('Clear the entire conversation?')) return;
+    if (!confirm('Clear everything?')) return;
     state.conversation = [];
     state.turnCount = 0;
     saveState();
     chat.innerHTML = '';
     chat.appendChild(emptyState);
-    showToast('Conversation cleared.');
+    showToast('Cleared.');
     input.focus();
   }
 
@@ -725,7 +824,7 @@
     toast._timeout = setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
-  // ─── Mode & Personality switching ─────────────────────────
+  // ─── Events ───────────────────────────────────────────────
 
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -744,26 +843,16 @@
   });
 
   document.querySelectorAll('.suggestions button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      input.value = btn.dataset.prompt;
-      input.focus();
-    });
+    btn.addEventListener('click', () => { input.value = btn.dataset.prompt; input.focus(); });
   });
 
-  // ─── Events ───────────────────────────────────────────────
-
   sendBtn.addEventListener('click', handleSend);
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && !state.sending) {
-      e.preventDefault();
-      handleSend();
-    }
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !state.sending) { e.preventDefault(); handleSend(); }
   });
 
   document.getElementById('exportBtn').addEventListener('click', exportConversation);
   document.getElementById('clearBtn').addEventListener('click', clearConversation);
-
-  // ─── Restore ──────────────────────────────────────────────
 
   restoreConversation();
   input.focus();
